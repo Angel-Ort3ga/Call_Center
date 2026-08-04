@@ -13,10 +13,39 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+
+            // Información personal
+            $table->string('nombre', 100);
+            $table->string('apellido', 100);
+            $table->string('username', 50)->unique();
+
+            // Acceso
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+
+            // Información laboral
+            $table->string('telefono', 20)->nullable();
+            $table->string('extension', 10)->nullable();
+            $table->string('cargo', 100)->nullable();
+            $table->string('foto')->nullable();
+
+            // Relaciones
+            $table->foreignId('role_id')
+                ->constrained('roles')
+                ->cascadeOnUpdate()
+                ->restrictOnDelete();
+
+            $table->foreignId('departamento_id')
+                ->constrained('departamentos')
+                ->cascadeOnUpdate()
+                ->restrictOnDelete();
+
+            // Estado
+            $table->boolean('activo')->default(true);
+            $table->integer('new_notifications')->default(0);
+            $table->timestamp('ultimo_acceso')->nullable();
+
             $table->rememberToken();
             $table->timestamps();
         });
