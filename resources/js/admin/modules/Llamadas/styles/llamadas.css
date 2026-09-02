@@ -1,0 +1,552 @@
+/* ============================================================
+   MODALES
+   ============================================================ */
+
+.llamada-modal-overlay {
+
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 1000;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 20px;
+
+    background: rgba(17, 24, 39, 0.55);
+
+}
+
+
+.llamada-detail-modal {
+
+    width: 100%;
+
+    max-width: 760px;
+
+    max-height: 90vh;
+
+    overflow-y: auto;
+
+    background: #ffffff;
+
+    border-radius: 12px;
+
+    box-shadow:
+        0 20px 50px
+        rgba(0, 0, 0, 0.20);
+
+}
+
+
+.llamada-form-card {
+
+    width: 100%;
+
+    background: #ffffff;
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 12px;
+
+    box-shadow:
+        0 8px 25px
+        rgba(0, 0, 0, 0.08);
+
+}
+
+
+/* ============================================================
+   HEADER MODAL
+   ============================================================ */
+
+.llamada-modal-header,
+.llamada-form-header {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    justify-content: space-between;
+
+    padding: 22px 24px;
+
+    border-bottom: 1px solid #e5e7eb;
+
+}
+
+
+.llamada-modal-header h2,
+.llamada-form-header h2 {
+
+    margin: 0;
+
+    color: #1f2937;
+
+    font-size: 20px;
+
+    font-weight: 700;
+
+}
+
+
+.llamada-modal-header p,
+.llamada-form-header p {
+
+    margin: 5px 0 0;
+
+    color: #6b7280;
+
+    font-size: 13px;
+
+}
+
+
+.llamada-modal-close {
+
+    width: 34px;
+
+    height: 34px;
+
+    border: none;
+
+    border-radius: 6px;
+
+    background: #f3f4f6;
+
+    color: #6b7280;
+
+    cursor: pointer;
+
+    font-size: 22px;
+
+    line-height: 1;
+
+}
+
+
+.llamada-modal-close:hover {
+
+    background: #e5e7eb;
+
+}
+
+
+.llamada-modal-close:disabled {
+
+    opacity: 0.5;
+
+    cursor: not-allowed;
+
+}
+
+
+/* ============================================================
+   DETALLE
+   ============================================================ */
+
+.llamada-detail-content {
+
+    padding: 24px;
+
+}
+
+
+.detail-section {
+
+    margin-bottom: 24px;
+
+}
+
+
+.detail-section:last-child {
+
+    margin-bottom: 0;
+
+}
+
+
+.detail-section h3 {
+
+    margin: 0 0 15px;
+
+    padding-bottom: 10px;
+
+    border-bottom: 1px solid #e5e7eb;
+
+    color: #374151;
+
+    font-size: 15px;
+
+    font-weight: 700;
+
+}
+
+
+.detail-grid {
+
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 15px;
+
+}
+
+
+.detail-item {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 5px;
+
+}
+
+
+.detail-item span,
+.detail-text span {
+
+    color: #9ca3af;
+
+    font-size: 11px;
+
+    font-weight: 600;
+
+    text-transform: uppercase;
+
+}
+
+
+.detail-item strong {
+
+    color: #374151;
+
+    font-size: 14px;
+
+}
+
+
+.detail-text {
+
+    margin-top: 18px;
+
+}
+
+
+.detail-text p {
+
+    margin: 7px 0 0;
+
+    color: #4b5563;
+
+    font-size: 14px;
+
+    line-height: 1.6;
+
+}
+
+
+/* ============================================================
+   FOOTER MODAL
+   ============================================================ */
+
+.llamada-modal-footer {
+
+    display: flex;
+
+    justify-content: flex-end;
+
+    padding: 18px 24px;
+
+    border-top: 1px solid #e5e7eb;
+
+}
+
+
+/* ============================================================
+   FORMULARIO
+   ============================================================ */
+
+.llamada-form {
+
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 18px;
+
+    padding: 24px;
+
+}
+
+
+.llamada-form-group {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 7px;
+
+}
+
+
+.llamada-form-group.full {
+
+    grid-column: 1 / -1;
+
+}
+
+
+.llamada-form-group label {
+
+    color: #374151;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+}
+
+
+.llamada-form-group input,
+.llamada-form-group select,
+.llamada-form-group textarea {
+
+    width: 100%;
+
+    box-sizing: border-box;
+
+    border: 1px solid #d1d5db;
+
+    border-radius: 7px;
+
+    background: #ffffff;
+
+    color: #374151;
+
+    outline: none;
+
+    font-family: inherit;
+
+}
+
+
+.llamada-form-group input,
+.llamada-form-group select {
+
+    height: 40px;
+
+    padding: 0 12px;
+
+}
+
+
+.llamada-form-group textarea {
+
+    padding: 10px 12px;
+
+    resize: vertical;
+
+}
+
+
+.llamada-form-group input:focus,
+.llamada-form-group select:focus,
+.llamada-form-group textarea:focus {
+
+    border-color: #2563eb;
+
+}
+
+
+.llamada-form-group small {
+
+    color: #dc2626;
+
+    font-size: 11px;
+
+}
+
+
+/* ============================================================
+   ERROR
+   ============================================================ */
+
+.llamada-form-error {
+
+    margin: 20px 24px 0;
+
+    padding: 12px 15px;
+
+    border-radius: 7px;
+
+    background: #fee2e2;
+
+    color: #991b1b;
+
+    font-size: 13px;
+
+}
+
+
+/* ============================================================
+   BOTONES
+   ============================================================ */
+
+.llamada-form-actions {
+
+    grid-column: 1 / -1;
+
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 10px;
+
+    margin-top: 5px;
+
+    padding-top: 20px;
+
+    border-top: 1px solid #e5e7eb;
+
+}
+
+
+.llamada-primary-button,
+.llamada-secondary-button {
+
+    height: 40px;
+
+    padding: 0 16px;
+
+    border-radius: 7px;
+
+    cursor: pointer;
+
+    font-weight: 600;
+
+}
+
+
+.llamada-primary-button {
+
+    border: none;
+
+    background: #2563eb;
+
+    color: #ffffff;
+
+}
+
+
+.llamada-primary-button:hover {
+
+    background: #1d4ed8;
+
+}
+
+
+.llamada-secondary-button {
+
+    border: 1px solid #d1d5db;
+
+    background: #ffffff;
+
+    color: #374151;
+
+}
+
+
+.llamada-secondary-button:hover {
+
+    background: #f9fafb;
+
+}
+
+
+.llamada-primary-button:disabled,
+.llamada-secondary-button:disabled {
+
+    opacity: 0.6;
+
+    cursor: not-allowed;
+
+}
+
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 700px) {
+
+    .llamada-form {
+
+        grid-template-columns: 1fr;
+
+    }
+
+
+    .llamada-form-group.full {
+
+        grid-column: auto;
+
+    }
+
+
+    .detail-grid {
+
+        grid-template-columns: 1fr;
+
+    }
+
+
+    .llamada-form-actions {
+
+        grid-column: auto;
+
+        flex-direction: column;
+
+    }
+
+
+    .llamada-form-actions button {
+
+        width: 100%;
+
+    }
+
+}
+
+
+@media (max-width: 500px) {
+
+    .llamada-modal-overlay {
+
+        padding: 10px;
+
+    }
+
+
+    .llamada-detail-content {
+
+        padding: 18px;
+
+    }
+
+
+    .llamada-form {
+
+        padding: 18px;
+
+    }
+
+}

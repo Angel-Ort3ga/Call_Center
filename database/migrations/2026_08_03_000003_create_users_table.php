@@ -27,7 +27,6 @@ return new class extends Migration
             // Información laboral
             $table->string('telefono', 20)->nullable();
             $table->string('extension', 10)->nullable();
-            $table->string('cargo', 100)->nullable();
             $table->string('foto')->nullable();
 
             // Relaciones

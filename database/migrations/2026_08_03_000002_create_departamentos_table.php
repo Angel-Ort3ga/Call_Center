@@ -25,6 +25,11 @@ return new class extends Migration
 
             $table->string('correo')->nullable();
 
+             $table->foreignId('responsable_id')
+                ->nullable()
+                ->constrained('users')
+                ->nullOnDelete();
+
             $table->time('horario_inicio');
 
             $table->time('horario_fin');

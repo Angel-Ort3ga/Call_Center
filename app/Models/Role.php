@@ -5,34 +5,19 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-
 
 class Role extends Model
 {
     use HasFactory;
 
     /**
-     * Campos asignables.
+     * Campos que se pueden asignar masivamente.
      */
     protected $fillable = [
-
         'nombre',
-
-        'codigo',
-
-        'extension',
-
-        'correo',
-
-        'responsable_id',
-
-        'horario_inicio',
-
-        'horario_fin',
-
-        'activo'
-
+        'slug',
+        'descripcion',
+        'activo',
     ];
 
     /**
@@ -41,13 +26,7 @@ class Role extends Model
     protected function casts(): array
     {
         return [
-
             'activo' => 'boolean',
-
-            'horario_inicio' => 'datetime:H:i',
-
-            'horario_fin' => 'datetime:H:i',
-
         ];
     }
 
@@ -58,18 +37,10 @@ class Role extends Model
     */
 
     /**
-     * Un departamento tiene muchos usuarios.
+     * Usuarios que tienen este rol.
      */
     public function users(): HasMany
     {
         return $this->hasMany(User::class);
-    }
-
-    /**
-     * Usuario responsable del departamento.
-     */
-    public function responsable(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'responsable_id');
     }
 }
