@@ -576,6 +576,17 @@ class LlamadaController extends Controller
 
     /**
      * Cambiar estado de una llamada.
+     *
+     * Flujo normal:
+     *
+     * Recepcionista:
+     *      en_proceso -> transferida
+     *
+     * Jefe de departamento:
+     *      transferida -> finalizada
+     *
+     * Supervisor / Super Admin:
+     *      pueden administrar cualquier transición permitida.
      */
     public function toggleStatus(
         Request $request,
@@ -583,18 +594,26 @@ class LlamadaController extends Controller
     ): JsonResponse {
 
         /*
-        |--------------------------------------------------------------------------
-        | Verificar permisos
-        |--------------------------------------------------------------------------
-        */
+    |--------------------------------------------------------------------------
+    | Verificar acceso a la llamada
+    |--------------------------------------------------------------------------
+    */
 
         if (!$this->puedeAcceder($llamada)) {
 
             return response()->json([
                 'success' => false,
-                'message' => 'No tienes permiso para modificar el estado de esta llamada.',
+                'message' =>
+                'No tienes permiso para modificar esta llamada.',
             ], 403);
         }
+
+
+        /*
+    |--------------------------------------------------------------------------
+    | Validar nuevo estado
+    |--------------------------------------------------------------------------
+    */
 
         $validated = $request->validate([
 
@@ -602,19 +621,191 @@ class LlamadaController extends Controller
                 'required',
                 'in:en_proceso,transferida,finalizada',
             ],
+
         ]);
 
-        $estado = $validated['estado'];
+
+        $nuevoEstado = $validated['estado'];
+
+        $estadoActual = $llamada->estado;
+
+        $usuario = Auth::user();
+
 
         /*
-        |--------------------------------------------------------------------------
-        | Actualizar fechas dependiendo del estado
-        |--------------------------------------------------------------------------
-        */
+    |--------------------------------------------------------------------------
+    | Super Admin / Supervisor
+    |--------------------------------------------------------------------------
+    |
+    | Pueden administrar los estados.
+    |
+    */
+
+        if (
+            $usuario->esSuperAdmin() ||
+            $usuario->esSupervisor()
+        ) {
+
+            $this->actualizarEstado(
+                $llamada,
+                $nuevoEstado
+            );
+
+            return response()->json([
+
+                'success' => true,
+
+                'message' =>
+                'Estado actualizado correctamente.',
+
+                'data' => $llamada->fresh([
+                    'departamento',
+                    'usuario.role',
+                ]),
+
+            ]);
+        }
+
+
+        /*
+    |--------------------------------------------------------------------------
+    | RECEPCIONISTA
+    |--------------------------------------------------------------------------
+    |
+    | Solamente puede transferir una llamada que está
+    | actualmente en proceso.
+    |
+    */
+
+        if ($usuario->esRecepcionista()) {
+
+            if (
+                $estadoActual !== 'en_proceso' ||
+                $nuevoEstado !== 'transferida'
+            ) {
+
+                return response()->json([
+
+                    'success' => false,
+
+                    'message' =>
+                    'La recepcionista solamente puede transferir llamadas que están en proceso.',
+
+                ], 403);
+            }
+
+
+            $this->actualizarEstado(
+                $llamada,
+                $nuevoEstado
+            );
+
+
+            return response()->json([
+
+                'success' => true,
+
+                'message' =>
+                'Llamada transferida correctamente.',
+
+                'data' => $llamada->fresh([
+                    'departamento',
+                    'usuario.role',
+                ]),
+
+            ]);
+        }
+
+
+        /*
+    |--------------------------------------------------------------------------
+    | JEFE DE DEPARTAMENTO
+    |--------------------------------------------------------------------------
+    |
+    | Solamente puede finalizar llamadas:
+    |
+    | transferida -> finalizada
+    |
+    | Además, puedeAcceder() ya garantiza que la llamada
+    | pertenezca a su departamento.
+    |
+    */
+
+        if ($usuario->esJefeDepartamento()) {
+
+            if (
+                $estadoActual !== 'transferida' ||
+                $nuevoEstado !== 'finalizada'
+            ) {
+
+                return response()->json([
+
+                    'success' => false,
+
+                    'message' =>
+                    'El jefe de departamento solamente puede finalizar llamadas transferidas.',
+
+                ], 403);
+            }
+
+
+            $this->actualizarEstado(
+                $llamada,
+                $nuevoEstado
+            );
+
+
+            return response()->json([
+
+                'success' => true,
+
+                'message' =>
+                'Llamada finalizada correctamente.',
+
+                'data' => $llamada->fresh([
+                    'departamento',
+                    'usuario.role',
+                ]),
+
+            ]);
+        }
+
+
+        /*
+    |--------------------------------------------------------------------------
+    | Usuario sin permisos
+    |--------------------------------------------------------------------------
+    */
+
+        return response()->json([
+
+            'success' => false,
+
+            'message' =>
+            'No tienes permisos para cambiar el estado de esta llamada.',
+
+        ], 403);
+    }
+
+
+    /**
+     * Actualizar estado y fechas relacionadas.
+     */
+    private function actualizarEstado(
+        Llamada $llamada,
+        string $estado
+    ): void {
 
         $datos = [
             'estado' => $estado,
         ];
+
+
+        /*
+    |--------------------------------------------------------------------------
+    | Transferida
+    |--------------------------------------------------------------------------
+    */
 
         if ($estado === 'transferida') {
 
@@ -623,10 +814,32 @@ class LlamadaController extends Controller
             $datos['finalizada_at'] = null;
         }
 
+
+        /*
+    |--------------------------------------------------------------------------
+    | Finalizada
+    |--------------------------------------------------------------------------
+    */
+
         if ($estado === 'finalizada') {
+
+            /*
+        | Si por alguna razón no existe fecha de transferencia,
+        | no la inventamos.
+        |
+        | La llamada normalmente llegará aquí después de
+        | estar en estado "transferida".
+        */
 
             $datos['finalizada_at'] = now();
         }
+
+
+        /*
+    |--------------------------------------------------------------------------
+    | En proceso
+    |--------------------------------------------------------------------------
+    */
 
         if ($estado === 'en_proceso') {
 
@@ -635,21 +848,8 @@ class LlamadaController extends Controller
             $datos['finalizada_at'] = null;
         }
 
+
         $llamada->update($datos);
-
-        $llamada->load([
-            'departamento',
-            'usuario.role',
-        ]);
-
-        return response()->json([
-            'success' => true,
-
-            'message' =>
-            'Estado actualizado correctamente.',
-
-            'data' => $llamada,
-        ]);
     }
 
     /**

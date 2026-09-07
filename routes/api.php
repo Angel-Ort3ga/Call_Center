@@ -201,18 +201,38 @@ Route::prefix('admin')->group(function () {
         */
 
         Route::middleware(
-            'role:super_admin,recepcionista'
+            'role:super_admin,supervisor,jefe_departamento,recepcionista'
         )->group(function () {
+
+            /*
+    |--------------------------------------------------------------------------
+    | Registrar llamadas
+    |--------------------------------------------------------------------------
+    */
 
             Route::post('/llamadas', [
                 LlamadaController::class,
                 'store'
             ]);
 
+
+            /*
+    |--------------------------------------------------------------------------
+    | Actualizar información de llamadas
+    |--------------------------------------------------------------------------
+    */
+
             Route::put('/llamadas/{llamada}', [
                 LlamadaController::class,
                 'update'
             ]);
+
+
+            /*
+    |--------------------------------------------------------------------------
+    | Cambiar estado
+    |--------------------------------------------------------------------------
+    */
 
             Route::patch('/llamadas/{llamada}/estado', [
                 LlamadaController::class,

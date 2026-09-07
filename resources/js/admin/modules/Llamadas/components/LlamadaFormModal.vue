@@ -1,198 +1,201 @@
 <template>
+    <div class="llamada-form">
 
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <!-- ========================================================= -->
+        <!-- ENCABEZADO                                                -->
+        <!-- ========================================================= -->
 
-        <!-- ============================================================
-             ENCABEZADO
-        ============================================================= -->
+        <div class="form-header">
 
-        <div class="px-6 py-5 border-b border-gray-200">
+            <div>
+                <h2 class="form-title">
+                    Registrar nueva llamada
+                </h2>
 
-            <div class="flex items-center justify-between">
+                <p class="form-subtitle">
+                    Completa la información de la llamada paso a paso.
+                </p>
+            </div>
 
-                <div>
+            <button
+                type="button"
+                class="btn-close"
+                @click="cancelar"
+                :disabled="guardando"
+            >
+                <i class="fas fa-times"></i>
+            </button>
 
-                    <h2 class="text-xl font-bold text-gray-800">
-                        Nueva llamada
-                    </h2>
+        </div>
 
-                    <p class="text-sm text-gray-500 mt-1">
-                        Registra la información de la llamada recibida.
-                    </p>
+
+        <!-- ========================================================= -->
+        <!-- PASOS                                                     -->
+        <!-- ========================================================= -->
+
+        <div class="steps-container">
+
+            <div
+                v-for="paso in pasos"
+                :key="paso.id"
+                class="step"
+                :class="{
+                    'step-active': pasoActual === paso.id,
+                    'step-completed': pasoCompletado(paso.id)
+                }"
+            >
+
+                <div class="step-circle">
+
+                    <i
+                        v-if="pasoCompletado(paso.id)"
+                        class="fas fa-check"
+                    ></i>
+
+                    <span v-else>
+                        {{ paso.id }}
+                    </span>
 
                 </div>
 
-                <button
-                    type="button"
-                    class="text-gray-400 hover:text-gray-600 text-2xl leading-none"
-                    :disabled="guardando"
-                    @click="$emit('cancelar')"
-                >
-                    ×
-                </button>
+                <div class="step-text">
+
+                    <strong>
+                        {{ paso.nombre }}
+                    </strong>
+
+                    <span>
+                        {{ paso.descripcion }}
+                    </span>
+
+                </div>
 
             </div>
 
         </div>
 
 
-        <!-- ============================================================
-             CONTENIDO
-        ============================================================= -->
+        <!-- ========================================================= -->
+        <!-- ERROR GENERAL                                             -->
+        <!-- ========================================================= -->
 
-        <div class="flex flex-col lg:flex-row">
+        <div
+            v-if="error"
+            class="alert-error"
+        >
 
-            <!-- ========================================================
-                 STEPS
-            ========================================================= -->
+            <i class="fas fa-exclamation-circle"></i>
 
-            <div
-                class="lg:w-64 bg-gray-50 border-b lg:border-b-0 lg:border-r border-gray-200 p-6"
-            >
+            <span>
+                {{ error }}
+            </span>
 
-                <div class="mb-6">
-
-                    <h3 class="font-semibold text-gray-800">
-                        Registro de llamada
-                    </h3>
-
-                    <p class="text-xs text-gray-500 mt-1">
-                        Completa todos los campos requeridos.
-                    </p>
-
-                </div>
+        </div>
 
 
-                <!-- PASO 1 -->
+        <!-- ========================================================= -->
+        <!-- CONTENIDO                                                 -->
+        <!-- ========================================================= -->
 
-                <div class="flex items-start gap-3 mb-6">
+        <div class="form-content">
 
-                    <div
-                        class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold shrink-0"
-                        :class="claseStep(1)"
-                    >
 
-                        <span v-if="pasoCompletado(1)">
-                            ✓
-                        </span>
+            <!-- ===================================================== -->
+            <!-- PASO 1: CIUDADANO                                    -->
+            <!-- ===================================================== -->
 
-                        <span v-else>
-                            1
-                        </span>
+            <div v-if="pasoActual === 1">
 
+                <div class="section-heading">
+
+                    <div class="section-icon">
+                        <i class="fas fa-user"></i>
                     </div>
 
                     <div>
+                        <h3>
+                            Datos del ciudadano
+                        </h3>
 
-                        <p class="font-medium text-sm text-gray-800">
-                            Ciudadano
+                        <p>
+                            Ingresa los datos básicos de la persona que realiza la llamada.
                         </p>
-
-                        <p class="text-xs text-gray-500 mt-1">
-                            Datos de contacto
-                        </p>
-
                     </div>
 
                 </div>
 
 
-                <!-- PASO 2 -->
-
-                <div class="flex items-start gap-3 mb-6">
-
-                    <div
-                        class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold shrink-0"
-                        :class="claseStep(2)"
-                    >
-
-                        <span v-if="pasoCompletado(2)">
-                            ✓
-                        </span>
-
-                        <span v-else>
-                            2
-                        </span>
-
-                    </div>
-
-                    <div>
-
-                        <p class="font-medium text-sm text-gray-800">
-                            Información
-                        </p>
-
-                        <p class="text-xs text-gray-500 mt-1">
-                            Motivo y categoría
-                        </p>
-
-                    </div>
-
-                </div>
+                <div class="form-grid">
 
 
-                <!-- PASO 3 -->
+                    <!-- TELEFONO -->
 
-                <div class="flex items-start gap-3 mb-6">
+                    <div class="form-group">
 
-                    <div
-                        class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold shrink-0"
-                        :class="claseStep(3)"
-                    >
+                        <label for="telefono">
+                            Teléfono
+                        </label>
 
-                        <span v-if="pasoCompletado(3)">
-                            ✓
-                        </span>
+                        <div class="input-wrapper">
 
-                        <span v-else>
-                            3
+                            <i class="fas fa-phone"></i>
+
+                            <input
+                                id="telefono"
+                                type="text"
+                                v-model.trim="form.telefono"
+                                placeholder="Número telefónico"
+                                maxlength="20"
+                                autocomplete="off"
+                                :class="{
+                                    'has-error': errores.telefono
+                                }"
+                            />
+
+                        </div>
+
+                        <span
+                            v-if="errores.telefono"
+                            class="error-text"
+                        >
+                            {{ errores.telefono }}
                         </span>
 
                     </div>
 
-                    <div>
 
-                        <p class="font-medium text-sm text-gray-800">
-                            Departamento
-                        </p>
+                    <!-- NOMBRE -->
 
-                        <p class="text-xs text-gray-500 mt-1">
-                            Destino de la llamada
-                        </p>
+                    <div class="form-group">
 
-                    </div>
+                        <label for="nombre">
+                            Nombre
+                        </label>
 
-                </div>
+                        <div class="input-wrapper">
 
+                            <i class="fas fa-user"></i>
 
-                <!-- PASO 4 -->
+                            <input
+                                id="nombre"
+                                type="text"
+                                v-model.trim="form.nombre"
+                                placeholder="Nombre del ciudadano"
+                                maxlength="255"
+                                autocomplete="off"
+                                :class="{
+                                    'has-error': errores.nombre
+                                }"
+                            />
 
-                <div class="flex items-start gap-3">
+                        </div>
 
-                    <div
-                        class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold shrink-0"
-                        :class="claseStep(4)"
-                    >
-
-                        <span v-if="pasoCompletado(4)">
-                            ✓
+                        <span
+                            v-if="errores.nombre"
+                            class="error-text"
+                        >
+                            {{ errores.nombre }}
                         </span>
-
-                        <span v-else>
-                            4
-                        </span>
-
-                    </div>
-
-                    <div>
-
-                        <p class="font-medium text-sm text-gray-800">
-                            Observaciones
-                        </p>
-
-                        <p class="text-xs text-gray-500 mt-1">
-                            Información adicional
-                        </p>
 
                     </div>
 
@@ -201,397 +204,492 @@
             </div>
 
 
-            <!-- ========================================================
-                 FORMULARIO
-            ========================================================= -->
+            <!-- ===================================================== -->
+            <!-- PASO 2: INFORMACIÓN                                  -->
+            <!-- ===================================================== -->
 
-            <div class="flex-1 p-6">
+            <div v-if="pasoActual === 2">
 
-                <!-- ERROR GENERAL -->
+                <div class="section-heading">
+
+                    <div class="section-icon">
+                        <i class="fas fa-info-circle"></i>
+                    </div>
+
+                    <div>
+                        <h3>
+                            Información de la llamada
+                        </h3>
+
+                        <p>
+                            Indica el motivo y la categoría de la llamada.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <!-- MOTIVO -->
+
+                <div class="form-group">
+
+                    <label for="motivo">
+                        Motivo de la llamada
+                    </label>
+
+                    <textarea
+                        id="motivo"
+                        v-model.trim="form.motivo"
+                        rows="5"
+                        maxlength="1000"
+                        placeholder="Describe brevemente el motivo de la llamada..."
+                        :class="{
+                            'has-error': errores.motivo
+                        }"
+                    ></textarea>
+
+                    <div class="field-footer">
+
+                        <span
+                            v-if="errores.motivo"
+                            class="error-text"
+                        >
+                            {{ errores.motivo }}
+                        </span>
+
+                        <span
+                            v-else
+                            class="error-placeholder"
+                        ></span>
+
+                        <span class="counter">
+                            {{ form.motivo.length }}/1000
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- CATEGORIA -->
+
+                <div class="form-group">
+
+                    <label for="categoria">
+                        Categoría
+                    </label>
+
+                    <div class="input-wrapper">
+
+                        <i class="fas fa-tags"></i>
+
+                        <select
+                            id="categoria"
+                            v-model="form.categoria"
+                            :class="{
+                                'has-error': errores.categoria
+                            }"
+                        >
+
+                            <option value="">
+                                Selecciona una categoría
+                            </option>
+
+                            <option value="informacion">
+                                Información
+                            </option>
+
+                            <option value="queja">
+                                Queja
+                            </option>
+
+                            <option value="tramite">
+                                Trámite
+                            </option>
+
+                            <option value="soporte">
+                                Soporte
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    <span
+                        v-if="errores.categoria"
+                        class="error-text"
+                    >
+                        {{ errores.categoria }}
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- ===================================================== -->
+            <!-- PASO 3: DEPARTAMENTO                                 -->
+            <!-- ===================================================== -->
+
+            <div v-if="pasoActual === 3">
+
+                <div class="section-heading">
+
+                    <div class="section-icon">
+                        <i class="fas fa-building"></i>
+                    </div>
+
+                    <div>
+                        <h3>
+                            Departamento destino
+                        </h3>
+
+                        <p>
+                            Selecciona el departamento al que será dirigida la llamada.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <!-- CARGANDO -->
 
                 <div
-                    v-if="error"
-                    class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg"
+                    v-if="cargandoDepartamentos"
+                    class="loading-box"
                 >
 
-                    <p class="text-sm font-medium text-red-700">
-                        {{ error }}
-                    </p>
+                    <i class="fas fa-spinner fa-spin"></i>
+
+                    <span>
+                        Cargando departamentos...
+                    </span>
 
                 </div>
 
 
-                <form
-                    @submit.prevent="guardar"
+                <!-- SELECT -->
+
+                <div
+                    v-else
+                    class="form-group"
                 >
 
-                    <!-- ==================================================
-                         PASO 1
-                    =================================================== -->
-
-                    <div class="mb-8">
-
-                        <div class="mb-5">
-
-                            <h3 class="text-lg font-semibold text-gray-800">
-                                Datos del ciudadano
-                            </h3>
-
-                            <p class="text-sm text-gray-500">
-                                Información básica de la persona que realiza la llamada.
-                            </p>
-
-                        </div>
-
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-
-                            <!-- TELÉFONO -->
-
-                            <div>
-
-                                <label class="block text-sm font-medium text-gray-700 mb-2">
-
-                                    Teléfono
-
-                                    <span class="text-red-500">
-                                        *
-                                    </span>
-
-                                </label>
-
-                                <input
-                                    v-model="form.telefono"
-                                    type="text"
-                                    maxlength="20"
-                                    placeholder="Número de teléfono"
-                                    class="w-full border rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2"
-                                    :class="claseInput('telefono')"
-                                    @input="limpiarError('telefono')"
-                                >
-
-                                <p
-                                    v-if="errores.telefono"
-                                    class="text-xs text-red-600 mt-1"
-                                >
-                                    {{ obtenerError('telefono') }}
-                                </p>
-
-                            </div>
-
-
-                            <!-- NOMBRE -->
-
-                            <div>
-
-                                <label class="block text-sm font-medium text-gray-700 mb-2">
-
-                                    Nombre
-
-                                    <span class="text-red-500">
-                                        *
-                                    </span>
-
-                                </label>
-
-                                <input
-                                    v-model="form.nombre"
-                                    type="text"
-                                    maxlength="150"
-                                    placeholder="Nombre del ciudadano"
-                                    class="w-full border rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2"
-                                    :class="claseInput('nombre')"
-                                    @input="limpiarError('nombre')"
-                                >
-
-                                <p
-                                    v-if="errores.nombre"
-                                    class="text-xs text-red-600 mt-1"
-                                >
-                                    {{ obtenerError('nombre') }}
-                                </p>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- ==================================================
-                         PASO 2
-                    =================================================== -->
-
-                    <div class="mb-8">
-
-                        <div class="mb-5">
-
-                            <h3 class="text-lg font-semibold text-gray-800">
-                                Información de la llamada
-                            </h3>
-
-                            <p class="text-sm text-gray-500">
-                                Indica el motivo y categoría de la llamada.
-                            </p>
-
-                        </div>
-
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-
-                            <!-- MOTIVO -->
-
-                            <div class="md:col-span-2">
-
-                                <label class="block text-sm font-medium text-gray-700 mb-2">
-
-                                    Motivo
-
-                                    <span class="text-red-500">
-                                        *
-                                    </span>
-
-                                </label>
-
-                                <textarea
-                                    v-model="form.motivo"
-                                    rows="4"
-                                    placeholder="Describe el motivo de la llamada..."
-                                    class="w-full border rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 resize-none"
-                                    :class="claseInput('motivo')"
-                                    @input="limpiarError('motivo')"
-                                ></textarea>
-
-                                <p
-                                    v-if="errores.motivo"
-                                    class="text-xs text-red-600 mt-1"
-                                >
-                                    {{ obtenerError('motivo') }}
-                                </p>
-
-                            </div>
-
-
-                            <!-- CATEGORÍA -->
-
-                            <div>
-
-                                <label class="block text-sm font-medium text-gray-700 mb-2">
-
-                                    Categoría
-
-                                    <span class="text-red-500">
-                                        *
-                                    </span>
-
-                                </label>
-
-                                <select
-                                    v-model="form.categoria"
-                                    class="w-full border rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2"
-                                    :class="claseInput('categoria')"
-                                    @change="limpiarError('categoria')"
-                                >
-
-                                    <option value="">
-                                        Selecciona una categoría
-                                    </option>
-
-                                    <option value="queja">
-                                        Queja
-                                    </option>
-
-                                    <option value="informacion">
-                                        Información
-                                    </option>
-
-                                    <option value="tramite">
-                                        Trámite
-                                    </option>
-
-                                    <option value="soporte">
-                                        Soporte
-                                    </option>
-
-                                </select>
-
-                                <p
-                                    v-if="errores.categoria"
-                                    class="text-xs text-red-600 mt-1"
-                                >
-                                    {{ obtenerError('categoria') }}
-                                </p>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- ==================================================
-                         PASO 3
-                    =================================================== -->
-
-                    <div class="mb-8">
-
-                        <div class="mb-5">
-
-                            <h3 class="text-lg font-semibold text-gray-800">
-                                Departamento
-                            </h3>
-
-                            <p class="text-sm text-gray-500">
-                                Selecciona el departamento al que corresponde la llamada.
-                            </p>
-
-                        </div>
-
-
-                        <div>
-
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
-
-                                Departamento
-
-                                <span class="text-red-500">
-                                    *
-                                </span>
-
-                            </label>
-
-                            <select
-                                v-model="form.departamento_id"
-                                class="w-full border rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2"
-                                :class="claseInput('departamento_id')"
-                                :disabled="cargandoDepartamentos"
-                                @change="limpiarError('departamento_id')"
+                    <label for="departamento_id">
+                        Departamento
+                    </label>
+
+                    <div class="input-wrapper">
+
+                        <i class="fas fa-building"></i>
+
+                        <select
+                            id="departamento_id"
+                            v-model="form.departamento_id"
+                            :class="{
+                                'has-error': errores.departamento_id
+                            }"
+                        >
+
+                            <option value="">
+                                Selecciona un departamento
+                            </option>
+
+                            <option
+                                v-for="departamento in departamentos"
+                                :key="departamento.id"
+                                :value="departamento.id"
                             >
+                                {{ departamento.nombre }}
+                            </option>
 
-                                <option value="">
-
-                                    {{
-                                        cargandoDepartamentos
-                                            ? 'Cargando departamentos...'
-                                            : 'Selecciona un departamento'
-                                    }}
-
-                                </option>
-
-                                <option
-                                    v-for="departamento in departamentos"
-                                    :key="departamento.id"
-                                    :value="departamento.id"
-                                >
-                                    {{ departamento.nombre }}
-                                </option>
-
-                            </select>
-
-                            <p
-                                v-if="errores.departamento_id"
-                                class="text-xs text-red-600 mt-1"
-                            >
-                                {{ obtenerError('departamento_id') }}
-                            </p>
-
-                        </div>
+                        </select>
 
                     </div>
 
 
-                    <!-- ==================================================
-                         PASO 4
-                    =================================================== -->
+                    <!-- ERROR -->
 
-                    <div class="mb-8">
-
-                        <div class="mb-5">
-
-                            <h3 class="text-lg font-semibold text-gray-800">
-                                Observaciones
-                            </h3>
-
-                            <p class="text-sm text-gray-500">
-                                Agrega información adicional si es necesario.
-                            </p>
-
-                        </div>
+                    <span
+                        v-if="errores.departamento_id"
+                        class="error-text"
+                    >
+                        {{ errores.departamento_id }}
+                    </span>
 
 
-                        <div>
-
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
-
-                                Observaciones
-
-                            </label>
-
-                            <textarea
-                                v-model="form.observaciones"
-                                rows="4"
-                                placeholder="Observaciones adicionales..."
-                                class="w-full border rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 resize-none"
-                                :class="claseInput('observaciones')"
-                                @input="limpiarError('observaciones')"
-                            ></textarea>
-
-                            <p
-                                v-if="errores.observaciones"
-                                class="text-xs text-red-600 mt-1"
-                            >
-                                {{ obtenerError('observaciones') }}
-                            </p>
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- ==================================================
-                         BOTONES
-                    =================================================== -->
+                    <!-- SIN DEPARTAMENTOS -->
 
                     <div
-                        class="flex items-center justify-end gap-3 pt-5 border-t border-gray-200"
+                        v-if="departamentos.length === 0"
+                        class="empty-box"
                     >
 
-                        <button
-                            type="button"
-                            class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition"
-                            :disabled="guardando"
-                            @click="$emit('cancelar')"
-                        >
-                            Cancelar
-                        </button>
+                        <i class="fas fa-exclamation-triangle"></i>
 
+                        <div>
 
-                        <button
-                            type="submit"
-                            class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition disabled:opacity-50"
-                            :disabled="guardando"
-                        >
+                            <strong>
+                                No hay departamentos disponibles
+                            </strong>
 
-                            <span v-if="guardando">
-                                Guardando...
-                            </span>
+                            <p>
+                                No se pudieron cargar los departamentos.
+                            </p>
 
-                            <span v-else>
-                                Guardar llamada
-                            </span>
-
-                        </button>
+                        </div>
 
                     </div>
 
-                </form>
+                </div>
+
+
+                <!-- INFORMACIÓN DEL DEPARTAMENTO -->
+
+                <div
+                    v-if="departamentoSeleccionado"
+                    class="department-card"
+                >
+
+                    <div class="department-icon">
+
+                        <i class="fas fa-building"></i>
+
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            {{ nombreDepartamento }}
+                        </strong>
+
+                        <p>
+                            Departamento seleccionado como destino de la llamada.
+                        </p>
+
+                    </div>
+
+                </div>
 
             </div>
+
+
+            <!-- ===================================================== -->
+            <!-- PASO 4: OBSERVACIONES                                -->
+            <!-- ===================================================== -->
+
+            <div v-if="pasoActual === 4">
+
+                <div class="section-heading">
+
+                    <div class="section-icon">
+                        <i class="fas fa-clipboard-list"></i>
+                    </div>
+
+                    <div>
+                        <h3>
+                            Observaciones
+                        </h3>
+
+                        <p>
+                            Agrega cualquier información adicional antes de registrar la llamada.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="observaciones">
+                        Observaciones
+                    </label>
+
+                    <textarea
+                        id="observaciones"
+                        v-model.trim="form.observaciones"
+                        rows="6"
+                        maxlength="2000"
+                        placeholder="Escribe aquí cualquier observación adicional..."
+                        :class="{
+                            'has-error': errores.observaciones
+                        }"
+                    ></textarea>
+
+                    <div class="field-footer">
+
+                        <span
+                            v-if="errores.observaciones"
+                            class="error-text"
+                        >
+                            {{ errores.observaciones }}
+                        </span>
+
+                        <span
+                            v-else
+                            class="error-placeholder"
+                        ></span>
+
+                        <span class="counter">
+                            {{ form.observaciones.length }}/2000
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- RESUMEN -->
+
+                <div class="summary-card">
+
+                    <div class="summary-title">
+
+                        <i class="fas fa-file-alt"></i>
+
+                        <span>
+                            Resumen de la llamada
+                        </span>
+
+                    </div>
+
+
+                    <div class="summary-grid">
+
+                        <div class="summary-item">
+
+                            <span class="summary-label">
+                                Ciudadano
+                            </span>
+
+                            <span class="summary-value">
+                                {{ form.nombre || 'No especificado' }}
+                            </span>
+
+                        </div>
+
+
+                        <div class="summary-item">
+
+                            <span class="summary-label">
+                                Teléfono
+                            </span>
+
+                            <span class="summary-value">
+                                {{ form.telefono || 'No especificado' }}
+                            </span>
+
+                        </div>
+
+
+                        <div class="summary-item">
+
+                            <span class="summary-label">
+                                Categoría
+                            </span>
+
+                            <span class="summary-value">
+                                {{ categoriaTexto || 'No especificada' }}
+                            </span>
+
+                        </div>
+
+
+                        <div class="summary-item">
+
+                            <span class="summary-label">
+                                Departamento
+                            </span>
+
+                            <span class="summary-value">
+                                {{ nombreDepartamento || 'No especificado' }}
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ========================================================= -->
+        <!-- FOOTER                                                    -->
+        <!-- ========================================================= -->
+
+        <div class="form-footer">
+
+            <button
+                v-if="pasoActual > 1"
+                type="button"
+                class="btn btn-secondary"
+                @click="pasoAnterior"
+                :disabled="guardando"
+            >
+
+                <i class="fas fa-arrow-left"></i>
+
+                Anterior
+
+            </button>
+
+
+            <div class="footer-space"></div>
+
+
+            <button
+                type="button"
+                class="btn btn-light"
+                @click="cancelar"
+                :disabled="guardando"
+            >
+                Cancelar
+            </button>
+
+
+            <button
+                v-if="pasoActual < pasos.length"
+                type="button"
+                class="btn btn-primary"
+                @click="siguientePaso"
+                :disabled="guardando"
+            >
+
+                Siguiente
+
+                <i class="fas fa-arrow-right"></i>
+
+            </button>
+
+
+            <button
+                v-else
+                type="button"
+                class="btn btn-success"
+                @click="guardar"
+                :disabled="guardando"
+            >
+
+                <i
+                    v-if="guardando"
+                    class="fas fa-spinner fa-spin"
+                ></i>
+
+                <i
+                    v-else
+                    class="fas fa-save"
+                ></i>
+
+                {{ guardando ? 'Guardando...' : 'Registrar llamada' }}
+
+            </button>
 
         </div>
 
     </div>
-
 </template>
 
 
@@ -609,15 +707,36 @@ export default {
 
         return {
 
-            departamentos: [],
+            pasoActual: 1,
 
-            cargandoDepartamentos: false,
 
-            guardando: false,
+            pasos: [
 
-            error: null,
+                {
+                    id: 1,
+                    nombre: 'Ciudadano',
+                    descripcion: 'Datos básicos'
+                },
 
-            errores: {},
+                {
+                    id: 2,
+                    nombre: 'Información',
+                    descripcion: 'Motivo y categoría'
+                },
+
+                {
+                    id: 3,
+                    nombre: 'Departamento',
+                    descripcion: 'Destino de la llamada'
+                },
+
+                {
+                    id: 4,
+                    nombre: 'Observaciones',
+                    descripcion: 'Revisión y registro'
+                }
+
+            ],
 
 
             form: {
@@ -632,16 +751,131 @@ export default {
 
                 departamento_id: '',
 
-                observaciones: '',
+                observaciones: ''
 
             },
+
+
+            departamentos: [],
+
+
+            cargandoDepartamentos: false,
+
+
+            guardando: false,
+
+
+            errores: {},
+
+
+            error: null
 
         };
 
     },
 
 
+    computed: {
+
+
+        /* ========================================================= */
+        /* DEPARTAMENTO SELECCIONADO                                */
+        /* ========================================================= */
+
+        departamentoSeleccionado() {
+
+            if (
+                !this.form ||
+                !this.form.departamento_id ||
+                !Array.isArray(this.departamentos)
+            ) {
+                return null;
+            }
+
+
+            return this.departamentos.find(
+                departamento => {
+
+                    if (
+                        !departamento ||
+                        departamento.id === null ||
+                        departamento.id === undefined
+                    ) {
+                        return false;
+                    }
+
+
+                    return (
+                        String(departamento.id) ===
+                        String(this.form.departamento_id)
+                    );
+
+                }
+            ) || null;
+
+        },
+
+
+        /* ========================================================= */
+        /* NOMBRE DEPARTAMENTO                                      */
+        /* ========================================================= */
+
+        nombreDepartamento() {
+
+            if (
+                !this.departamentoSeleccionado
+            ) {
+                return '';
+            }
+
+
+            return (
+                this.departamentoSeleccionado.nombre ||
+                ''
+            );
+
+        },
+
+
+        /* ========================================================= */
+        /* CATEGORIA TEXTO                                          */
+        /* ========================================================= */
+
+        categoriaTexto() {
+
+            const categorias = {
+
+                informacion: 'Información',
+
+                queja: 'Queja',
+
+                tramite: 'Trámite',
+
+                soporte: 'Soporte'
+
+            };
+
+
+            return (
+                categorias[this.form.categoria] ||
+                ''
+            );
+
+        }
+
+    },
+
+
+    /* ============================================================= */
+    /* CICLO DE VIDA                                                */
+    /* ============================================================= */
+
     mounted() {
+
+        console.log(
+            'LlamadaFormModal montado correctamente'
+        );
+
 
         this.cargarDepartamentos();
 
@@ -650,33 +884,142 @@ export default {
 
     methods: {
 
-        /* ============================================================
-           DEPARTAMENTOS
-        ============================================================= */
+
+        /* ========================================================= */
+        /* CARGAR DEPARTAMENTOS                                     */
+        /* ========================================================= */
 
         async cargarDepartamentos() {
 
             this.cargandoDepartamentos = true;
 
+            this.error = null;
+
+
             try {
+
+                console.log(
+                    'Cargando departamentos...'
+                );
+
 
                 const response = await axios.get(
                     '/api/admin/departamentos'
                 );
 
-                const data =
-                    response.data.data ||
-                    response.data;
+
+                console.log(
+                    'Respuesta departamentos:',
+                    response.data
+                );
 
 
-                if (Array.isArray(data)) {
+                const respuesta =
+                    response &&
+                    response.data
+                        ? response.data
+                        : null;
 
-                    this.departamentos = data;
 
-                } else {
+                let datos = [];
 
-                    this.departamentos =
-                        data.data || [];
+
+                /*
+                 * Caso 1:
+                 *
+                 * [
+                 *     { id: 1, nombre: 'RH' }
+                 * ]
+                 */
+
+                if (Array.isArray(respuesta)) {
+
+                    datos = respuesta;
+
+                }
+
+
+                /*
+                 * Caso 2:
+                 *
+                 * {
+                 *     data: [
+                 *         { id: 1, nombre: 'RH' }
+                 *     ]
+                 * }
+                 */
+
+                else if (
+                    respuesta &&
+                    Array.isArray(respuesta.data)
+                ) {
+
+                    datos = respuesta.data;
+
+                }
+
+
+                /*
+                 * Caso 3:
+                 *
+                 * {
+                 *     data: {
+                 *         data: [...]
+                 *     }
+                 * }
+                 */
+
+                else if (
+                    respuesta &&
+                    respuesta.data &&
+                    Array.isArray(
+                        respuesta.data.data
+                    )
+                ) {
+
+                    datos =
+                        respuesta.data.data;
+
+                }
+
+
+                /*
+                 * Filtrar valores inválidos.
+                 */
+
+                this.departamentos =
+                    datos.filter(
+                        departamento => {
+
+                            return (
+                                departamento &&
+                                typeof departamento === 'object' &&
+                                departamento.id !== null &&
+                                departamento.id !== undefined
+                            );
+
+                        }
+                    );
+
+
+                console.log(
+                    'Departamentos cargados en LlamadaFormModal:',
+                    this.departamentos
+                );
+
+
+                /*
+                 * Si no se encontró ningún departamento,
+                 * lo dejamos explícito en consola.
+                 */
+
+                if (
+                    this.departamentos.length === 0
+                ) {
+
+                    console.warn(
+                        'La API respondió correctamente, pero no se encontraron departamentos.'
+                    );
 
                 }
 
@@ -687,8 +1030,36 @@ export default {
                     error
                 );
 
-                this.error =
-                    'No fue posible cargar los departamentos.';
+
+                this.departamentos = [];
+
+
+                if (
+                    error.response &&
+                    error.response.status === 401
+                ) {
+
+                    this.error =
+                        'Tu sesión ha expirado. Inicia sesión nuevamente.';
+
+                }
+
+                else if (
+                    error.response &&
+                    error.response.status === 403
+                ) {
+
+                    this.error =
+                        'No tienes permisos para consultar los departamentos.';
+
+                }
+
+                else {
+
+                    this.error =
+                        'No fue posible cargar los departamentos.';
+
+                }
 
             } finally {
 
@@ -699,30 +1070,304 @@ export default {
         },
 
 
-        /* ============================================================
-           GUARDAR
-        ============================================================= */
+        /* ========================================================= */
+        /* SIGUIENTE PASO                                           */
+        /* ========================================================= */
 
-        async guardar() {
+        siguientePaso() {
 
-            this.guardando = true;
+            if (
+                !this.validarPasoActual()
+            ) {
+                return;
+            }
 
-            this.error = null;
+
+            if (
+                this.pasoActual <
+                this.pasos.length
+            ) {
+
+                this.pasoActual++;
+
+                this.errores = {};
+
+                this.error = null;
+
+            }
+
+        },
+
+
+        /* ========================================================= */
+        /* PASO ANTERIOR                                            */
+        /* ========================================================= */
+
+        pasoAnterior() {
+
+            if (
+                this.pasoActual > 1
+            ) {
+
+                this.pasoActual--;
+
+                this.errores = {};
+
+                this.error = null;
+
+            }
+
+        },
+
+
+        /* ========================================================= */
+        /* VALIDAR PASO                                             */
+        /* ========================================================= */
+
+        validarPasoActual() {
 
             this.errores = {};
 
 
+            /*
+             * PASO 1
+             */
+
+            if (
+                this.pasoActual === 1
+            ) {
+
+                if (
+                    !this.form.telefono
+                ) {
+
+                    this.$set(
+                        this.errores,
+                        'telefono',
+                        'El teléfono es obligatorio.'
+                    );
+
+                }
+
+
+                if (
+                    !this.form.nombre
+                ) {
+
+                    this.$set(
+                        this.errores,
+                        'nombre',
+                        'El nombre es obligatorio.'
+                    );
+
+                }
+
+            }
+
+
+            /*
+             * PASO 2
+             */
+
+            if (
+                this.pasoActual === 2
+            ) {
+
+                if (
+                    !this.form.motivo
+                ) {
+
+                    this.$set(
+                        this.errores,
+                        'motivo',
+                        'El motivo es obligatorio.'
+                    );
+
+                }
+
+
+                if (
+                    !this.form.categoria
+                ) {
+
+                    this.$set(
+                        this.errores,
+                        'categoria',
+                        'Selecciona una categoría.'
+                    );
+
+                }
+
+            }
+
+
+            /*
+             * PASO 3
+             */
+
+            if (
+                this.pasoActual === 3
+            ) {
+
+                if (
+                    !this.form.departamento_id
+                ) {
+
+                    this.$set(
+                        this.errores,
+                        'departamento_id',
+                        'Selecciona un departamento.'
+                    );
+
+                }
+
+            }
+
+
+            return (
+                Object.keys(
+                    this.errores
+                ).length === 0
+            );
+
+        },
+
+
+        /* ========================================================= */
+        /* PASO COMPLETADO                                          */
+        /* ========================================================= */
+
+        pasoCompletado(id) {
+
+            if (
+                id >= this.pasoActual
+            ) {
+                return false;
+            }
+
+
+            if (
+                id === 1
+            ) {
+
+                return (
+                    !!this.form.telefono &&
+                    !!this.form.nombre
+                );
+
+            }
+
+
+            if (
+                id === 2
+            ) {
+
+                return (
+                    !!this.form.motivo &&
+                    !!this.form.categoria
+                );
+
+            }
+
+
+            if (
+                id === 3
+            ) {
+
+                return !!this.form.departamento_id;
+
+            }
+
+
+            return false;
+
+        },
+
+
+        /* ========================================================= */
+        /* GUARDAR                                                   */
+        /* ========================================================= */
+
+        async guardar() {
+
+            /*
+             * Como estamos en el paso 4,
+             * verificamos todos los pasos antes de enviar.
+             */
+
+            if (
+                !this.validarTodosLosPasos()
+            ) {
+
+                return;
+
+            }
+
+
+            this.guardando = true;
+
+            this.errores = {};
+
+            this.error = null;
+
+
             try {
 
-                await axios.post(
-                    '/api/admin/llamadas',
-                    this.form
+                const datos = {
+
+                    telefono:
+                        this.form.telefono,
+
+                    nombre:
+                        this.form.nombre,
+
+                    motivo:
+                        this.form.motivo,
+
+                    categoria:
+                        this.form.categoria,
+
+                    departamento_id:
+                        this.form.departamento_id,
+
+                    observaciones:
+                        this.form.observaciones ||
+                        null
+
+                };
+
+
+                console.log(
+                    'Datos que se enviarán:',
+                    datos
                 );
 
 
-                this.$emit('guardado');
+                const response =
+                    await axios.post(
+                        '/api/admin/llamadas',
+                        datos
+                    );
 
-                this.resetForm();
+
+                console.log(
+                    'Llamada guardada:',
+                    response.data
+                );
+
+
+                /*
+                 * IMPORTANTE:
+                 * El index.vue escucha @guardado.
+                 */
+
+                this.$emit(
+                    'guardado',
+                    response.data
+                );
+
+
+                this.resetear();
 
             } catch (error) {
 
@@ -744,25 +1389,31 @@ export default {
 
                     this.error =
                         error.response.data.message ||
-                        'Revisa los datos del formulario.';
+                        'Revisa los datos ingresados.';
 
-                } else if (
+                }
+
+                else if (
                     error.response &&
                     error.response.status === 401
                 ) {
 
                     this.error =
-                        'Tu sesión ha expirado.';
+                        'Tu sesión ha expirado. Inicia sesión nuevamente.';
 
-                } else if (
+                }
+
+                else if (
                     error.response &&
                     error.response.status === 403
                 ) {
 
                     this.error =
-                        'No tienes permisos para registrar llamadas.';
+                        'No tienes permisos para registrar la llamada.';
 
-                } else {
+                }
+
+                else {
 
                     this.error =
                         'No fue posible guardar la llamada.';
@@ -778,11 +1429,156 @@ export default {
         },
 
 
-        /* ============================================================
-           RESET
-        ============================================================= */
+        /* ========================================================= */
+        /* VALIDAR TODOS LOS PASOS                                  */
+        /* ========================================================= */
 
-        resetForm() {
+        validarTodosLosPasos() {
+
+            const errores = {};
+
+
+            /*
+             * Ciudadano
+             */
+
+            if (
+                !this.form.telefono
+            ) {
+
+                errores.telefono =
+                    'El teléfono es obligatorio.';
+
+            }
+
+
+            if (
+                !this.form.nombre
+            ) {
+
+                errores.nombre =
+                    'El nombre es obligatorio.';
+
+            }
+
+
+            /*
+             * Información
+             */
+
+            if (
+                !this.form.motivo
+            ) {
+
+                errores.motivo =
+                    'El motivo es obligatorio.';
+
+            }
+
+
+            if (
+                !this.form.categoria
+            ) {
+
+                errores.categoria =
+                    'Selecciona una categoría.';
+
+            }
+
+
+            /*
+             * Departamento
+             */
+
+            if (
+                !this.form.departamento_id
+            ) {
+
+                errores.departamento_id =
+                    'Selecciona un departamento.';
+
+            }
+
+
+            this.errores = errores;
+
+
+            if (
+                Object.keys(errores).length > 0
+            ) {
+
+                /*
+                 * Llevar al usuario al primer
+                 * paso que tenga error.
+                 */
+
+                if (
+                    errores.telefono ||
+                    errores.nombre
+                ) {
+
+                    this.pasoActual = 1;
+
+                }
+
+                else if (
+                    errores.motivo ||
+                    errores.categoria
+                ) {
+
+                    this.pasoActual = 2;
+
+                }
+
+                else if (
+                    errores.departamento_id
+                ) {
+
+                    this.pasoActual = 3;
+
+                }
+
+
+                return false;
+
+            }
+
+
+            return true;
+
+        },
+
+
+        /* ========================================================= */
+        /* CANCELAR                                                  */
+        /* ========================================================= */
+
+        cancelar() {
+
+            if (
+                this.guardando
+            ) {
+                return;
+            }
+
+
+            /*
+             * IMPORTANTE:
+             * El index.vue escucha @cancelar.
+             */
+
+            this.$emit(
+                'cancelar'
+            );
+
+        },
+
+
+        /* ========================================================= */
+        /* RESETEAR                                                  */
+        /* ========================================================= */
+
+        resetear() {
 
             this.form = {
 
@@ -796,127 +1592,543 @@ export default {
 
                 departamento_id: '',
 
-                observaciones: '',
+                observaciones: ''
 
             };
 
+
+            this.pasoActual = 1;
 
             this.errores = {};
 
             this.error = null;
 
-        },
+        }
 
-
-        /* ============================================================
-           STEPS
-        ============================================================= */
-
-        pasoCompletado(paso) {
-
-            if (paso === 1) {
-
-                return (
-                    !!this.form.telefono &&
-                    !!this.form.nombre
-                );
-
-            }
-
-
-            if (paso === 2) {
-
-                return (
-                    !!this.form.motivo &&
-                    !!this.form.categoria
-                );
-
-            }
-
-
-            if (paso === 3) {
-
-                return !!this.form.departamento_id;
-
-            }
-
-
-            if (paso === 4) {
-
-                return !!this.form.observaciones;
-
-            }
-
-
-            return false;
-
-        },
-
-
-        claseStep(paso) {
-
-            if (this.pasoCompletado(paso)) {
-
-                return 'bg-green-100 text-green-700';
-
-            }
-
-
-            return 'bg-gray-200 text-gray-600';
-
-        },
-
-
-        /* ============================================================
-           ERRORES
-        ============================================================= */
-
-        limpiarError(campo) {
-
-            if (this.errores[campo]) {
-
-                const errores = {
-                    ...this.errores,
-                };
-
-                delete errores[campo];
-
-                this.errores = errores;
-
-            }
-
-        },
-
-
-        obtenerError(campo) {
-
-            const error = this.errores[campo];
-
-            if (Array.isArray(error)) {
-
-                return error[0];
-
-            }
-
-            return error || '';
-
-        },
-
-
-        claseInput(campo) {
-
-            if (this.errores[campo]) {
-
-                return 'border-red-300 focus:ring-red-200';
-
-            }
-
-            return 'border-gray-300 focus:ring-blue-200 focus:border-blue-500';
-
-        },
-
-    },
+    }
 
 };
 
 </script>
+
+
+<style scoped>
+
+.llamada-form {
+    width: 100%;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+}
+
+
+/* ================================================================ */
+/* HEADER                                                           */
+/* ================================================================ */
+
+.form-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 22px 25px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.form-title {
+    margin: 0;
+    color: #111827;
+    font-size: 21px;
+    font-weight: 700;
+}
+
+.form-subtitle {
+    margin: 5px 0 0;
+    color: #6b7280;
+    font-size: 13px;
+}
+
+.btn-close {
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 8px;
+    background: #f3f4f6;
+    color: #6b7280;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-close:hover {
+    background: #e5e7eb;
+    color: #111827;
+}
+
+
+/* ================================================================ */
+/* STEPS                                                            */
+/* ================================================================ */
+
+.steps-container {
+    display: flex;
+    gap: 10px;
+    padding: 18px 25px;
+    border-bottom: 1px solid #e5e7eb;
+    background: #fafafa;
+}
+
+.step {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    min-width: 0;
+    opacity: 0.5;
+}
+
+.step-active,
+.step-completed {
+    opacity: 1;
+}
+
+.step-circle {
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #e5e7eb;
+    color: #4b5563;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.step-active .step-circle {
+    background: #2563eb;
+    color: #ffffff;
+}
+
+.step-completed .step-circle {
+    background: #16a34a;
+    color: #ffffff;
+}
+
+.step-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.step-text strong {
+    color: #374151;
+    font-size: 12px;
+}
+
+.step-text span {
+    margin-top: 2px;
+    color: #9ca3af;
+    font-size: 10px;
+}
+
+
+/* ================================================================ */
+/* ERROR                                                            */
+/* ================================================================ */
+
+.alert-error {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin: 20px 25px 0;
+    padding: 12px 14px;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    background: #fef2f2;
+    color: #b91c1c;
+    font-size: 13px;
+}
+
+
+/* ================================================================ */
+/* CONTENT                                                          */
+/* ================================================================ */
+
+.form-content {
+    padding: 25px;
+}
+
+.section-heading {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 25px;
+}
+
+.section-icon {
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9px;
+    background: #eff6ff;
+    color: #2563eb;
+}
+
+.section-heading h3 {
+    margin: 0;
+    color: #111827;
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.section-heading p {
+    margin: 4px 0 0;
+    color: #6b7280;
+    font-size: 12px;
+}
+
+
+/* ================================================================ */
+/* FORMULARIOS                                                       */
+/* ================================================================ */
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 7px;
+    color: #374151;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.input-wrapper {
+    position: relative;
+}
+
+.input-wrapper > i {
+    position: absolute;
+    left: 13px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #9ca3af;
+    pointer-events: none;
+}
+
+.input-wrapper input,
+.input-wrapper select {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 11px 13px 11px 38px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #111827;
+    font-family: inherit;
+    font-size: 13px;
+    outline: none;
+    transition: 0.2s;
+}
+
+.input-wrapper input:focus,
+.input-wrapper select:focus,
+textarea:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+}
+
+textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px 13px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    color: #111827;
+    font-family: inherit;
+    font-size: 13px;
+    outline: none;
+    resize: vertical;
+    transition: 0.2s;
+}
+
+.has-error {
+    border-color: #dc2626 !important;
+}
+
+.error-text {
+    display: block;
+    margin-top: 5px;
+    color: #dc2626;
+    font-size: 11px;
+}
+
+.error-placeholder {
+    display: block;
+}
+
+.field-footer {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+}
+
+.counter {
+    margin-left: auto;
+    color: #9ca3af;
+    font-size: 11px;
+}
+
+
+/* ================================================================ */
+/* DEPARTAMENTOS                                                     */
+/* ================================================================ */
+
+.loading-box {
+    min-height: 130px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    border: 1px dashed #d1d5db;
+    border-radius: 10px;
+    color: #6b7280;
+    font-size: 13px;
+}
+
+.loading-box i {
+    color: #2563eb;
+}
+
+.empty-box {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-top: 10px;
+    padding: 13px;
+    border: 1px solid #fed7aa;
+    border-radius: 8px;
+    background: #fff7ed;
+    color: #c2410c;
+}
+
+.empty-box > i {
+    margin-top: 2px;
+}
+
+.empty-box strong {
+    display: block;
+    font-size: 12px;
+}
+
+.empty-box p {
+    margin: 3px 0 0;
+    color: #9a3412;
+    font-size: 11px;
+}
+
+.department-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 15px;
+    padding: 14px;
+    border: 1px solid #bfdbfe;
+    border-radius: 10px;
+    background: #eff6ff;
+}
+
+.department-icon {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9px;
+    background: #2563eb;
+    color: #ffffff;
+}
+
+.department-card strong {
+    display: block;
+    color: #1e3a8a;
+    font-size: 13px;
+}
+
+.department-card p {
+    margin: 3px 0 0;
+    color: #64748b;
+    font-size: 11px;
+}
+
+
+/* ================================================================ */
+/* RESUMEN                                                          */
+/* ================================================================ */
+
+.summary-card {
+    margin-top: 25px;
+    padding: 17px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: #f8fafc;
+}
+
+.summary-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 15px;
+    color: #111827;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.summary-title i {
+    color: #2563eb;
+}
+
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+.summary-item {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.summary-label {
+    color: #6b7280;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.summary-value {
+    color: #111827;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+
+/* ================================================================ */
+/* FOOTER                                                           */
+/* ================================================================ */
+
+.form-footer {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 18px 25px;
+    border-top: 1px solid #e5e7eb;
+    background: #fafafa;
+}
+
+.footer-space {
+    flex: 1;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.btn-primary {
+    background: #2563eb;
+    color: #ffffff;
+}
+
+.btn-primary:hover:not(:disabled) {
+    background: #1d4ed8;
+}
+
+.btn-success {
+    background: #16a34a;
+    color: #ffffff;
+}
+
+.btn-success:hover:not(:disabled) {
+    background: #15803d;
+}
+
+.btn-secondary {
+    background: #e5e7eb;
+    color: #374151;
+}
+
+.btn-secondary:hover:not(:disabled) {
+    background: #d1d5db;
+}
+
+.btn-light {
+    border: 1px solid #d1d5db;
+    background: #ffffff;
+    color: #374151;
+}
+
+.btn-light:hover:not(:disabled) {
+    background: #f9fafb;
+}
+
+
+/* ================================================================ */
+/* RESPONSIVE                                                        */
+/* ================================================================ */
+
+@media (max-width: 700px) {
+
+    .steps-container {
+        overflow-x: auto;
+    }
+
+    .step {
+        min-width: 150px;
+    }
+
+    .step-text span {
+        display: none;
+    }
+
+    .form-grid,
+    .summary-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-footer {
+        flex-wrap: wrap;
+    }
+
+}
+
+</style>

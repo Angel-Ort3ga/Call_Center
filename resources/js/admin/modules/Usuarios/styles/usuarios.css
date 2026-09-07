@@ -3,13 +3,9 @@
 /* ====================================================================== */
 
 .usuarios-page {
-
     min-height: 100vh;
-
     padding: 30px;
-
     background: #f5f7fa;
-
 }
 
 
@@ -18,123 +14,199 @@
 /* ====================================================================== */
 
 .primary-button {
-
     display: inline-flex;
-
     align-items: center;
-
     justify-content: center;
-
     gap: 8px;
 
     height: 40px;
-
     padding: 0 16px;
 
     border: none;
-
     border-radius: 7px;
 
     background: #2563eb;
-
     color: #ffffff;
 
     cursor: pointer;
 
     font-size: 13px;
-
     font-weight: 600;
 
+    transition:
+        background 0.15s ease,
+        transform 0.15s ease,
+        box-shadow 0.15s ease;
 }
-
 
 .primary-button:hover {
-
     background: #1d4ed8;
-
 }
 
+.primary-button:active {
+    transform: translateY(1px);
+}
 
 .primary-button:disabled {
-
     opacity: 0.6;
-
     cursor: not-allowed;
-
 }
 
 
+/* ====================================================================== */
+/* BOTÓN SECUNDARIO                                                       */
+/* ====================================================================== */
+
 .secondary-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
 
+    min-width: 100px;
     height: 40px;
-
     padding: 0 16px;
 
     border: 1px solid #d1d5db;
-
     border-radius: 7px;
 
     background: #ffffff;
-
     color: #374151;
 
     cursor: pointer;
 
+    font-size: 13px;
     font-weight: 600;
 
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease,
+        color 0.15s ease;
 }
-
 
 .secondary-button:hover {
-
     background: #f9fafb;
-
+    border-color: #9ca3af;
 }
-
 
 .secondary-button:disabled {
-
     opacity: 0.6;
-
     cursor: not-allowed;
-
 }
 
 
+/* ====================================================================== */
+/* BOTÓN PELIGRO                                                          */
+/* ====================================================================== */
+
 .danger-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
 
+    min-width: 145px;
     height: 40px;
+    padding: 0 18px;
 
-    padding: 0 16px;
-
-    border: none;
-
+    border: 1px solid #dc2626;
     border-radius: 7px;
 
     background: #dc2626;
-
     color: #ffffff;
 
     cursor: pointer;
 
+    font-size: 13px;
     font-weight: 600;
 
-}
+    box-sizing: border-box;
 
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease,
+        transform 0.15s ease,
+        box-shadow 0.15s ease;
+}
 
 .danger-button:hover {
-
     background: #b91c1c;
+    border-color: #b91c1c;
+    box-shadow: 0 3px 8px rgba(220, 38, 38, 0.2);
+}
 
+.danger-button:active {
+    transform: translateY(1px);
+}
+
+.danger-button:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+    box-shadow: none;
 }
 
 
-.danger-button:disabled {
+/* ====================================================================== */
+/* BOTÓN ÉXITO                                                            */
+/* ====================================================================== */
 
-    opacity: 0.6;
+.success-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
 
+    min-width: 145px;
+    height: 40px;
+    padding: 0 18px;
+
+    border: 1px solid #16a34a;
+    border-radius: 7px;
+
+    background: #16a34a;
+    color: #ffffff;
+
+    cursor: pointer;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    box-sizing: border-box;
+
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease,
+        transform 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+.success-button:hover {
+    background: #15803d;
+    border-color: #15803d;
+    box-shadow: 0 3px 8px rgba(22, 163, 74, 0.2);
+}
+
+.success-button:active {
+    transform: translateY(1px);
+}
+
+.success-button:disabled {
+    opacity: 0.65;
     cursor: not-allowed;
+    box-shadow: none;
+}
 
+
+/* ====================================================================== */
+/* ICONOS DE BOTONES GENERALES                                            */
+/* ====================================================================== */
+
+.primary-button i,
+.secondary-button i,
+.danger-button i,
+.success-button i {
+    font-size: 14px;
+    line-height: 1;
 }
 
 
@@ -143,71 +215,44 @@
 /* ====================================================================== */
 
 .alert {
-
     display: flex;
-
     align-items: center;
-
     gap: 10px;
 
     margin-bottom: 20px;
-
     padding: 13px 16px;
 
     border-radius: 8px;
 
     font-size: 14px;
-
 }
-
 
 .alert span {
-
     flex: 1;
-
 }
-
 
 .alert button {
-
     border: none;
-
     background: transparent;
-
     cursor: pointer;
-
 }
-
 
 .alert-error {
-
     background: #fee2e2;
-
     color: #991b1b;
-
 }
-
 
 .alert-error button {
-
     color: #991b1b;
-
 }
-
 
 .alert-success {
-
     background: #dcfce7;
-
     color: #166534;
-
 }
 
-
 .alert-success button {
-
     color: #166534;
-
 }
 
 
@@ -216,71 +261,52 @@
 /* ====================================================================== */
 
 .content-card {
-
     margin-bottom: 25px;
 
     border: 1px solid #e5e7eb;
-
     border-radius: 10px;
 
     background: #ffffff;
 
     overflow: hidden;
-
 }
 
-
 .card-header {
-
     display: flex;
-
     align-items: center;
-
     justify-content: space-between;
 
     padding: 20px 24px;
 
     border-bottom: 1px solid #e5e7eb;
-
 }
 
-
 .card-header h2 {
-
     margin: 0;
 
     color: #1f2937;
 
     font-size: 18px;
-
 }
 
-
 .card-header p {
-
     margin: 5px 0 0;
 
     color: #6b7280;
 
     font-size: 13px;
-
 }
 
-
 .total-badge {
-
     padding: 6px 10px;
 
     border-radius: 6px;
 
     background: #eff6ff;
-
     color: #2563eb;
 
     font-size: 12px;
-
     font-weight: 600;
-
 }
 
 
@@ -289,35 +315,24 @@
 /* ====================================================================== */
 
 .filters {
-
     display: flex;
-
     align-items: center;
-
     gap: 10px;
 
     padding: 20px 24px;
-
 }
 
-
 .filter-search {
-
     position: relative;
 
     flex: 1;
-
     min-width: 200px;
-
 }
 
-
 .filter-search i {
-
     position: absolute;
 
     top: 50%;
-
     left: 13px;
 
     transform: translateY(-50%);
@@ -325,20 +340,15 @@
     color: #9ca3af;
 
     font-size: 13px;
-
 }
 
-
 .filter-search input {
-
     width: 100%;
-
     height: 40px;
 
     padding: 0 12px 0 36px;
 
     border: 1px solid #d1d5db;
-
     border-radius: 7px;
 
     outline: none;
@@ -346,136 +356,89 @@
     color: #374151;
 
     box-sizing: border-box;
-
 }
-
 
 .filter-search input:focus {
-
     border-color: #2563eb;
-
 }
 
-
 .filter-select {
-
     height: 40px;
-
     min-width: 150px;
 
     padding: 0 12px;
 
     border: 1px solid #d1d5db;
-
     border-radius: 7px;
 
     background: #ffffff;
-
     color: #374151;
 
     outline: none;
-
 }
-
 
 .filter-select:focus {
-
     border-color: #2563eb;
-
 }
 
-
 .search-button {
-
     display: inline-flex;
-
     align-items: center;
-
     justify-content: center;
-
     gap: 7px;
 
     height: 40px;
-
     padding: 0 15px;
 
     border: none;
-
     border-radius: 7px;
 
     background: #2563eb;
-
     color: #ffffff;
 
     cursor: pointer;
 
     font-weight: 600;
-
     white-space: nowrap;
-
 }
-
 
 .search-button:hover {
-
     background: #1d4ed8;
-
 }
-
 
 .search-button:disabled {
-
     opacity: 0.6;
-
     cursor: not-allowed;
-
 }
 
-
 .clear-button {
-
     display: inline-flex;
-
     align-items: center;
-
     justify-content: center;
-
     gap: 7px;
 
     height: 40px;
-
     padding: 0 15px;
 
     border: 1px solid #d1d5db;
-
     border-radius: 7px;
 
     background: #ffffff;
-
     color: #4b5563;
 
     cursor: pointer;
 
     font-weight: 600;
-
     white-space: nowrap;
-
 }
-
 
 .clear-button:hover {
-
     background: #f9fafb;
-
 }
 
-
 .clear-button:disabled {
-
     opacity: 0.6;
-
     cursor: not-allowed;
-
 }
 
 
@@ -484,46 +447,32 @@
 /* ====================================================================== */
 
 .table-container {
-
     width: 100%;
-
     overflow-x: auto;
-
 }
 
-
 .users-table {
-
     width: 100%;
 
     border-collapse: collapse;
-
 }
 
-
 .users-table th {
-
     padding: 14px 18px;
 
     background: #f9fafb;
-
     color: #6b7280;
 
     text-align: left;
 
     font-size: 11px;
-
     font-weight: 600;
 
     text-transform: uppercase;
-
     white-space: nowrap;
-
 }
 
-
 .users-table td {
-
     padding: 15px 18px;
 
     border-top: 1px solid #f0f0f0;
@@ -533,21 +482,19 @@
     font-size: 13px;
 
     white-space: nowrap;
-
 }
 
+.users-table tbody tr {
+    transition: background 0.15s ease;
+}
 
 .users-table tbody tr:hover {
-
     background: #fafafa;
-
 }
 
-
 .actions-column {
-
+    width: 110px;
     text-align: center !important;
-
 }
 
 
@@ -556,69 +503,47 @@
 /* ====================================================================== */
 
 .user-info {
-
     display: flex;
-
     align-items: center;
-
     gap: 11px;
-
 }
 
-
 .user-avatar {
-
     width: 38px;
-
     height: 38px;
 
     display: flex;
-
     align-items: center;
-
     justify-content: center;
 
     overflow: hidden;
-
     flex-shrink: 0;
 
     border-radius: 50%;
 
     background: #dbeafe;
-
     color: #2563eb;
 
     font-size: 12px;
-
     font-weight: 700;
-
 }
 
-
 .user-avatar img {
-
     width: 100%;
-
     height: 100%;
 
     object-fit: cover;
-
 }
 
-
 .user-info strong {
-
     display: block;
 
     color: #374151;
 
     font-size: 13px;
-
 }
 
-
 .user-info span {
-
     display: block;
 
     margin-top: 3px;
@@ -626,14 +551,10 @@
     color: #9ca3af;
 
     font-size: 11px;
-
 }
 
-
 .email-text {
-
     color: #4b5563;
-
 }
 
 
@@ -642,7 +563,6 @@
 /* ====================================================================== */
 
 .role-badge {
-
     display: inline-flex;
 
     padding: 5px 9px;
@@ -650,13 +570,10 @@
     border-radius: 999px;
 
     background: #eff6ff;
-
     color: #1d4ed8;
 
     font-size: 11px;
-
     font-weight: 600;
-
 }
 
 
@@ -665,11 +582,8 @@
 /* ====================================================================== */
 
 .status-badge {
-
     display: inline-flex;
-
     align-items: center;
-
     gap: 6px;
 
     padding: 5px 9px;
@@ -677,124 +591,179 @@
     border-radius: 999px;
 
     font-size: 11px;
-
     font-weight: 600;
-
 }
-
 
 .status-active {
-
     background: #dcfce7;
-
     color: #166534;
-
 }
-
 
 .status-inactive {
-
     background: #fee2e2;
-
     color: #991b1b;
-
 }
 
-
 .status-dot {
-
     width: 6px;
-
     height: 6px;
+
+    flex-shrink: 0;
 
     border-radius: 50%;
 
     background: currentColor;
-
 }
 
 
 /* ====================================================================== */
-/* ACCIONES                                                              */
+/* ACCIONES DE TABLA                                                     */
 /* ====================================================================== */
 
 .actions {
-
     display: flex;
-
+    align-items: center;
     justify-content: center;
+    gap: 8px;
 
-    gap: 6px;
-
+    min-width: 76px;
 }
 
 
+/* Botón base */
+
 .action-button {
+    width: 36px;
+    min-width: 36px;
 
-    width: 32px;
+    height: 36px;
+    min-height: 36px;
 
-    height: 32px;
-
-    display: inline-flex;
-
+    display: inline-flex !important;
     align-items: center;
-
     justify-content: center;
 
-    border: none;
+    padding: 0 !important;
 
-    border-radius: 6px;
+    border: 1px solid transparent;
+
+    border-radius: 8px;
 
     cursor: pointer;
 
+    box-sizing: border-box;
+
+    line-height: 1;
+
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease,
+        color 0.15s ease,
+        transform 0.15s ease,
+        box-shadow 0.15s ease;
 }
 
+.action-button:hover {
+    transform: translateY(-1px);
+}
+
+.action-button:active {
+    transform: translateY(0);
+}
+
+
+/* ====================================================================== */
+/* ICONO DE ACCIÓN                                                       */
+/* ====================================================================== */
+
+.action-icon {
+    width: 100%;
+    height: 100%;
+
+    display: inline-flex !important;
+
+    align-items: center;
+    justify-content: center;
+
+    color: inherit;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    font-size: 17px !important;
+    font-weight: 700;
+
+    line-height: 1;
+
+    text-align: center;
+
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+
+/* ====================================================================== */
+/* EDITAR                                                                */
+/* ====================================================================== */
+
+.action-edit {
+    background: #eff6ff;
+    border-color: #dbeafe;
+
+    color: #2563eb;
+}
+
+.action-edit:hover {
+    background: #dbeafe;
+    border-color: #bfdbfe;
+
+    color: #1d4ed8;
+
+    box-shadow: 0 3px 8px rgba(37, 99, 235, 0.15);
+}
+
+
+/* ====================================================================== */
+/* DESACTIVAR                                                            */
+/* ====================================================================== */
 
 .action-warning {
-
     background: #fef3c7;
+    border-color: #fde68a;
 
     color: #92400e;
-
 }
-
 
 .action-warning:hover {
-
     background: #fde68a;
+    border-color: #fcd34d;
 
+    color: #78350f;
+
+    box-shadow: 0 3px 8px rgba(217, 119, 6, 0.15);
 }
 
+
+/* ====================================================================== */
+/* ACTIVAR                                                               */
+/* ====================================================================== */
 
 .action-success {
-
     background: #dcfce7;
+    border-color: #bbf7d0;
 
     color: #166534;
-
 }
-
 
 .action-success:hover {
-
     background: #bbf7d0;
+    border-color: #86efac;
 
-}
+    color: #14532d;
 
-
-.action-danger {
-
-    background: #fee2e2;
-
-    color: #b91c1c;
-
-}
-
-
-.action-danger:hover {
-
-    background: #fecaca;
-
+    box-shadow: 0 3px 8px rgba(22, 163, 74, 0.15);
 }
 
 
@@ -803,13 +772,10 @@
 /* ====================================================================== */
 
 .loading-container {
-
     min-height: 180px;
 
     display: flex;
-
     align-items: center;
-
     justify-content: center;
 
     gap: 10px;
@@ -817,7 +783,6 @@
     color: #6b7280;
 
     font-size: 14px;
-
 }
 
 
@@ -826,48 +791,35 @@
 /* ====================================================================== */
 
 .empty-message {
-
     min-height: 180px;
 
     display: flex;
-
     align-items: center;
-
     justify-content: center;
 
     gap: 15px;
 
     color: #9ca3af;
-
 }
-
 
 .empty-message > i {
-
     font-size: 25px;
-
 }
 
-
 .empty-message strong {
-
     display: block;
 
     color: #6b7280;
 
     font-size: 14px;
-
 }
 
-
 .empty-message span {
-
     display: block;
 
     margin-top: 4px;
 
     font-size: 12px;
-
 }
 
 
@@ -876,11 +828,8 @@
 /* ====================================================================== */
 
 .pagination {
-
     display: flex;
-
     align-items: center;
-
     justify-content: center;
 
     gap: 5px;
@@ -888,101 +837,80 @@
     padding: 18px;
 
     border-top: 1px solid #e5e7eb;
-
 }
 
-
 .pagination-button,
-
 .pagination-number {
-
     min-width: 34px;
-
     height: 34px;
 
     display: inline-flex;
-
     align-items: center;
-
     justify-content: center;
 
     border: 1px solid #d1d5db;
-
     border-radius: 6px;
 
     background: #ffffff;
-
     color: #4b5563;
 
     cursor: pointer;
 
     font-size: 12px;
-
     font-weight: 600;
-
 }
-
 
 .pagination-button:hover,
-
 .pagination-number:hover {
-
     border-color: #2563eb;
-
     color: #2563eb;
-
 }
-
 
 .pagination-button:disabled {
-
     opacity: 0.4;
-
     cursor: not-allowed;
-
 }
 
-
 .pagination-number.active {
-
     border-color: #2563eb;
 
     background: #2563eb;
-
     color: #ffffff;
-
 }
 
 
 /* ====================================================================== */
-/* MODAL                                                                 */
+/* MODAL GENERAL                                                         */
 /* ====================================================================== */
 
 .modal-overlay {
-
     position: fixed;
 
     inset: 0;
 
-    z-index: 1000;
+    z-index: 9999;
 
     display: flex;
-
     align-items: center;
-
     justify-content: center;
 
     padding: 20px;
 
-    background: rgba(17, 24, 39, 0.55);
+    background: rgba(17, 24, 39, 0.62);
 
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+
+    box-sizing: border-box;
 }
 
 
+/* ====================================================================== */
+/* MODAL FORMULARIO                                                       */
+/* ====================================================================== */
+
 .modal-card {
-
     width: 100%;
-
     max-width: 760px;
 
     max-height: 90vh;
@@ -994,57 +922,44 @@
     background: #ffffff;
 
     box-shadow:
-        0 20px 50px
-        rgba(0, 0, 0, 0.2);
-
+        0 20px 50px rgba(0, 0, 0, 0.2);
 }
 
-
 .modal-header {
-
     display: flex;
-
     align-items: flex-start;
-
     justify-content: space-between;
 
     padding: 22px 24px;
 
     border-bottom: 1px solid #e5e7eb;
-
 }
 
-
 .modal-header h2 {
-
     margin: 0;
 
     color: #1f2937;
 
     font-size: 20px;
-
 }
 
-
 .modal-header p {
-
     margin: 5px 0 0;
 
     color: #6b7280;
 
     font-size: 13px;
-
 }
 
-
 .modal-close {
-
     width: 34px;
     height: 34px;
 
     display: inline-flex;
     align-items: center;
     justify-content: center;
+
+    padding: 0;
 
     border: none;
     border-radius: 6px;
@@ -1053,29 +968,20 @@
     color: #6b7280;
 
     cursor: pointer;
-
-    padding: 0;
 }
-
 
 .modal-close:hover {
-
     background: #e5e7eb;
     color: #374151;
-
 }
 
-
 .close-icon {
-
     display: block;
 
     font-size: 24px;
-
     font-weight: 400;
 
     line-height: 1;
-
 }
 
 
@@ -1084,7 +990,6 @@
 /* ====================================================================== */
 
 .user-form {
-
     display: grid;
 
     grid-template-columns: 1fr 1fr;
@@ -1092,86 +997,59 @@
     gap: 18px;
 
     padding: 24px;
-
 }
 
-
 .form-group {
-
     display: flex;
-
     flex-direction: column;
 
     gap: 7px;
-
 }
-
 
 .form-group-full {
-
     grid-column: 1 / -1;
-
 }
 
-
 .form-group label {
-
     color: #374151;
 
     font-size: 13px;
-
     font-weight: 600;
-
 }
-
 
 .form-group label span {
-
     color: #dc2626;
-
 }
 
-
 .form-group input,
-
 .form-group select {
-
     width: 100%;
-
     height: 40px;
 
     padding: 0 12px;
 
     border: 1px solid #d1d5db;
-
     border-radius: 7px;
 
     background: #ffffff;
-
     color: #374151;
 
     outline: none;
 
     box-sizing: border-box;
-
 }
-
 
 .form-group input:focus,
-
 .form-group select:focus {
-
     border-color: #2563eb;
 
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.08);
 }
 
-
 .field-error {
-
     color: #dc2626;
 
     font-size: 11px;
-
 }
 
 
@@ -1180,29 +1058,20 @@
 /* ====================================================================== */
 
 .password-wrapper {
-
     position: relative;
-
 }
-
 
 .password-wrapper input {
-
     padding-right: 45px;
-
 }
 
-
 .password-button {
-
     position: absolute;
 
     top: 50%;
-
     right: 5px;
 
     width: 32px;
-
     height: 32px;
 
     transform: translateY(-50%);
@@ -1210,18 +1079,13 @@
     border: none;
 
     background: transparent;
-
     color: #6b7280;
 
     cursor: pointer;
-
 }
 
-
 .password-button:hover {
-
     color: #2563eb;
-
 }
 
 
@@ -1230,7 +1094,6 @@
 /* ====================================================================== */
 
 .checkbox-label {
-
     display: flex !important;
 
     flex-direction: row !important;
@@ -1240,16 +1103,11 @@
     gap: 8px;
 
     cursor: pointer;
-
 }
 
-
 .checkbox-label input {
-
     width: 16px;
-
     height: 16px;
-
 }
 
 
@@ -1258,7 +1116,6 @@
 /* ====================================================================== */
 
 .form-actions {
-
     grid-column: 1 / -1;
 
     display: flex;
@@ -1272,99 +1129,260 @@
     padding-top: 20px;
 
     border-top: 1px solid #e5e7eb;
-
 }
 
 
 /* ====================================================================== */
-/* MODAL CONFIRMACIÓN                                                    */
+/* MODAL CONFIRMACIÓN                                                     */
 /* ====================================================================== */
 
 .confirm-modal {
+    position: relative;
 
     width: 100%;
+    max-width: 430px;
 
-    max-width: 420px;
+    padding: 32px;
 
-    padding: 30px;
-
-    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
 
     background: #ffffff;
 
     text-align: center;
 
     box-shadow:
-        0 20px 50px
-        rgba(0, 0, 0, 0.2);
+        0 25px 60px rgba(0, 0, 0, 0.22);
 
+    box-sizing: border-box;
+
+    animation: confirmModalIn 0.18s ease-out;
 }
 
 
+/* Animación */
+
+@keyframes confirmModalIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+
+/* ====================================================================== */
+/* ICONO MODAL                                                           */
+/* ====================================================================== */
+
 .confirm-icon {
-
-    width: 52px;
-
-    height: 52px;
+    width: 68px;
+    height: 68px;
 
     display: flex;
-
     align-items: center;
-
     justify-content: center;
 
-    margin: 0 auto 15px;
+    margin: 0 auto 18px;
 
     border-radius: 50%;
 
     background: #fef3c7;
-
     color: #d97706;
 
-    font-size: 20px;
+    box-shadow:
+        0 0 0 8px #fffbeb;
 
+    box-sizing: border-box;
 }
 
+
+/* Icono real */
+
+.confirm-symbol {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 34px;
+    height: 34px;
+
+    border: 2px solid currentColor;
+    border-radius: 50%;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    font-size: 21px;
+    font-weight: 700;
+
+    line-height: 1;
+}
+
+
+/* ====================================================================== */
+/* MODAL DESACTIVAR                                                      */
+/* ====================================================================== */
+
+.confirm-modal.status-deactivate .confirm-icon {
+    background: #fee2e2;
+    color: #dc2626;
+
+    box-shadow:
+        0 0 0 8px #fef2f2;
+}
+
+
+/* ====================================================================== */
+/* MODAL ACTIVAR                                                          */
+/* ====================================================================== */
+
+.confirm-modal.status-activate .confirm-icon {
+    background: #dcfce7;
+    color: #16a34a;
+
+    box-shadow:
+        0 0 0 8px #f0fdf4;
+}
+
+
+/* ====================================================================== */
+/* TEXTO MODAL                                                           */
+/* ====================================================================== */
 
 .confirm-modal h2 {
-
     margin: 0;
 
-    color: #1f2937;
+    color: #111827;
 
-    font-size: 19px;
-
+    font-size: 20px;
+    font-weight: 700;
 }
 
-
 .confirm-modal p {
-
-    margin: 12px 0 24px;
+    margin: 12px 0 18px;
 
     color: #6b7280;
 
     font-size: 14px;
 
     line-height: 1.6;
-
 }
-
 
 .confirm-modal p strong {
-
     color: #374151;
-
+    font-weight: 700;
 }
 
 
-.confirm-actions {
+/* ====================================================================== */
+/* MENSAJE INFORMATIVO MODAL                                              */
+/* ====================================================================== */
 
+.confirm-warning {
+    display: flex;
+    align-items: flex-start;
+
+    gap: 9px;
+
+    margin: 18px 0 22px;
+
+    padding: 11px 13px;
+
+    border: 1px solid #fde68a;
+    border-radius: 8px;
+
+    background: #fffbeb;
+
+    color: #92400e;
+
+    text-align: left;
+
+    font-size: 12px;
+
+    line-height: 1.5;
+
+    box-sizing: border-box;
+}
+
+.confirm-warning i {
+    flex-shrink: 0;
+
+    margin-top: 1px;
+
+    font-size: 13px;
+}
+
+
+/* ====================================================================== */
+/* ACCIONES DEL MODAL                                                    */
+/* ====================================================================== */
+
+.confirm-actions {
     display: flex;
 
-    justify-content: center;
+    align-items: center;
+    justify-content: flex-end;
 
     gap: 10px;
 
+    margin-top: 24px;
+
+    padding-top: 20px;
+
+    border-top: 1px solid #f0f0f0;
+}
+
+
+/*
+ * IMPORTANTE:
+ *
+ * Los botones del modal tienen estilos propios y explícitos.
+ * Esto evita que alguna regla global los deje invisibles.
+ */
+
+.confirm-actions .secondary-button,
+.confirm-actions .danger-button,
+.confirm-actions .success-button {
+    display: inline-flex !important;
+
+    align-items: center;
+    justify-content: center;
+
+    visibility: visible !important;
+    opacity: 1;
+
+    flex-shrink: 0;
+}
+
+.confirm-actions button:disabled {
+    opacity: 0.6 !important;
+}
+
+
+/* ====================================================================== */
+/* SPINNER                                                               */
+/* ====================================================================== */
+
+.confirm-actions .fa-spinner {
+    animation: confirmSpin 0.8s linear infinite;
+}
+
+@keyframes confirmSpin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 
@@ -1375,129 +1393,110 @@
 @media (max-width: 1100px) {
 
     .filters {
-
         flex-wrap: wrap;
-
     }
-
 
     .filter-search {
-
         flex-basis: 100%;
-
     }
-
 }
 
 
 @media (max-width: 800px) {
 
     .usuarios-page {
-
         padding: 20px;
-
     }
-
 
     .filters {
-
         flex-direction: column;
-
         align-items: stretch;
-
     }
-
 
     .filter-search {
-
         width: 100%;
-
         flex-basis: auto;
-
     }
-
 
     .filter-select,
-
     .search-button,
-
     .clear-button {
-
         width: 100%;
-
     }
-
 
     .user-form {
-
         grid-template-columns: 1fr;
-
     }
-
 
     .form-group-full {
-
         grid-column: auto;
-
     }
 
-
     .form-actions {
-
         grid-column: auto;
 
         flex-direction: column;
-
     }
-
 
     .form-actions button {
-
         width: 100%;
-
     }
-
 }
 
 
 @media (max-width: 500px) {
 
     .usuarios-page {
-
         padding: 15px;
-
     }
 
-
     .card-header {
-
         align-items: flex-start;
 
         flex-direction: column;
 
         gap: 10px;
-
     }
-
 
     .modal-overlay {
-
         padding: 10px;
-
     }
-
 
     .modal-card {
-
         max-height: 95vh;
-
     }
-
 
     .user-form {
-
         padding: 18px;
-
     }
 
+    .confirm-modal {
+        padding: 25px 20px;
+
+        border-radius: 14px;
+    }
+
+    .confirm-actions {
+        flex-direction: column-reverse;
+
+        align-items: stretch;
+    }
+
+    .confirm-actions .secondary-button,
+    .confirm-actions .danger-button,
+    .confirm-actions .success-button {
+        width: 100%;
+    }
+
+    .actions {
+        gap: 6px;
+    }
+
+    .action-button {
+        width: 34px;
+        min-width: 34px;
+
+        height: 34px;
+        min-height: 34px;
+    }
 }

@@ -71,7 +71,7 @@
                                     <img
                                         v-if="usuario.foto"
                                         :src="usuario.foto"
-                                        alt="Foto"
+                                        alt="Foto de usuario"
                                     >
 
                                     <span v-else>
@@ -81,7 +81,7 @@
                                 </div>
 
 
-                                <div>
+                                <div class="user-data">
 
                                     <strong>
                                         {{ nombreCompleto(usuario) }}
@@ -99,7 +99,7 @@
 
 
                         <!-- ================================================= -->
-                        <!-- CORREO                                              -->
+                        <!-- CORREO                                             -->
                         <!-- ================================================= -->
 
                         <td>
@@ -112,7 +112,7 @@
 
 
                         <!-- ================================================= -->
-                        <!-- ROL                                                  -->
+                        <!-- ROL                                                -->
                         <!-- ================================================= -->
 
                         <td>
@@ -125,33 +125,39 @@
 
 
                         <!-- ================================================= -->
-                        <!-- DEPARTAMENTO                                         -->
+                        <!-- DEPARTAMENTO                                        -->
                         <!-- ================================================= -->
 
                         <td>
 
-                            {{
-                                usuario.departamento
-                                    ? usuario.departamento.nombre
-                                    : 'Sin departamento'
-                            }}
+                            <span class="department-text">
+
+                                {{
+                                    usuario.departamento
+                                        ? usuario.departamento.nombre
+                                        : 'Sin departamento'
+                                }}
+
+                            </span>
 
                         </td>
 
 
                         <!-- ================================================= -->
-                        <!-- TELÉFONO                                             -->
+                        <!-- TELÉFONO                                            -->
                         <!-- ================================================= -->
 
                         <td>
 
-                            {{ usuario.telefono || '—' }}
+                            <span class="phone-text">
+                                {{ usuario.telefono || '—' }}
+                            </span>
 
                         </td>
 
 
                         <!-- ================================================= -->
-                        <!-- ESTADO                                               -->
+                        <!-- ESTADO                                              -->
                         <!-- ================================================= -->
 
                         <td>
@@ -179,7 +185,7 @@
 
 
                         <!-- ================================================= -->
-                        <!-- ACCIONES                                              -->
+                        <!-- ACCIONES                                             -->
                         <!-- ================================================= -->
 
                         <td>
@@ -187,18 +193,19 @@
                             <div class="actions">
 
                                 <!-- ================================================= -->
-                                <!-- EDITAR                                            -->
+                                <!-- EDITAR                                             -->
                                 <!-- ================================================= -->
 
                                 <button
                                     type="button"
                                     class="action-button action-edit"
                                     title="Editar usuario"
+                                    aria-label="Editar usuario"
                                     @click="editarUsuario(usuario)"
                                 >
 
                                     <span class="action-icon">
-                                        ✏
+                                        ✎
                                     </span>
 
                                 </button>
@@ -221,33 +228,22 @@
                                             ? 'Desactivar usuario'
                                             : 'Activar usuario'
                                     "
+                                    :aria-label="
+                                        usuario.activo
+                                            ? 'Desactivar usuario'
+                                            : 'Activar usuario'
+                                    "
                                     @click="cambiarEstado(usuario)"
                                 >
 
                                     <span class="action-icon">
+
                                         {{
                                             usuario.activo
                                                 ? '⏸'
                                                 : '✓'
                                         }}
-                                    </span>
 
-                                </button>
-
-
-                                <!-- ================================================= -->
-                                <!-- DESACTIVAR CUENTA                                 -->
-                                <!-- ================================================= -->
-
-                                <button
-                                    type="button"
-                                    class="action-button action-danger"
-                                    title="Desactivar cuenta"
-                                    @click="desactivarUsuario(usuario)"
-                                >
-
-                                    <span class="action-icon">
-                                        🗑
                                     </span>
 
                                 </button>
@@ -274,9 +270,11 @@
             class="empty-message"
         >
 
-            <i class="fas fa-users"></i>
+            <div class="empty-icon">
+                <span>♙</span>
+            </div>
 
-            <div>
+            <div class="empty-content">
 
                 <strong>
                     No se encontraron usuarios
@@ -300,17 +298,23 @@
             class="pagination"
         >
 
+            <!-- ANTERIOR -->
+
             <button
                 type="button"
                 class="pagination-button"
                 :disabled="paginaActual <= 1"
+                title="Página anterior"
+                aria-label="Página anterior"
                 @click="cambiarPagina(paginaActual - 1)"
             >
 
-                <i class="fas fa-chevron-left"></i>
+                ‹
 
             </button>
 
+
+            <!-- NÚMEROS -->
 
             <button
                 v-for="(pagina, index) in paginasVisibles"
@@ -329,14 +333,18 @@
             </button>
 
 
+            <!-- SIGUIENTE -->
+
             <button
                 type="button"
                 class="pagination-button"
                 :disabled="paginaActual >= totalPaginas"
+                title="Página siguiente"
+                aria-label="Página siguiente"
                 @click="cambiarPagina(paginaActual + 1)"
             >
 
-                <i class="fas fa-chevron-right"></i>
+                ›
 
             </button>
 
@@ -395,6 +403,11 @@ export default {
             const actual = this.paginaActual;
 
 
+            /*
+             * Si hay pocas páginas,
+             * mostramos todas.
+             */
+
             if (total <= 7) {
 
                 for (
@@ -412,22 +425,31 @@ export default {
             }
 
 
+            /*
+             * Primera página.
+             */
+
             paginas.push(1);
 
 
-            const inicio =
-                Math.max(
-                    2,
-                    actual - 2
-                );
+            /*
+             * Rango alrededor de la página actual.
+             */
+
+            const inicio = Math.max(
+                2,
+                actual - 2
+            );
+
+            const fin = Math.min(
+                total - 1,
+                actual + 2
+            );
 
 
-            const fin =
-                Math.min(
-                    total - 1,
-                    actual + 2
-                );
-
+            /*
+             * Puntos suspensivos iniciales.
+             */
 
             if (inicio > 2) {
 
@@ -435,6 +457,10 @@ export default {
 
             }
 
+
+            /*
+             * Páginas intermedias.
+             */
 
             for (
                 let i = inicio;
@@ -447,12 +473,20 @@ export default {
             }
 
 
+            /*
+             * Puntos suspensivos finales.
+             */
+
             if (fin < total - 1) {
 
                 paginas.push('...');
 
             }
 
+
+            /*
+             * Última página.
+             */
 
             paginas.push(total);
 
@@ -466,11 +500,15 @@ export default {
 
     methods: {
 
-        /* ========================================================== */
-        /* EDITAR                                                     */
-        /* ========================================================== */
+        /* ============================================================= */
+        /* EDITAR                                                        */
+        /* ============================================================= */
 
         editarUsuario(usuario) {
+
+            if (!usuario) {
+                return;
+            }
 
             this.$emit(
                 'editar',
@@ -480,11 +518,15 @@ export default {
         },
 
 
-        /* ========================================================== */
-        /* CAMBIAR ESTADO                                              */
-        /* ========================================================== */
+        /* ============================================================= */
+        /* CAMBIAR ESTADO                                                */
+        /* ============================================================= */
 
         cambiarEstado(usuario) {
+
+            if (!usuario) {
+                return;
+            }
 
             this.$emit(
                 'cambiar-estado',
@@ -494,44 +536,26 @@ export default {
         },
 
 
-        /* ========================================================== */
-        /* DESACTIVAR CUENTA                                           */
-        /* ========================================================== */
-
-        desactivarUsuario(usuario) {
-
-            this.$emit(
-                'desactivar',
-                usuario
-            );
-
-        },
-
-
-        /* ========================================================== */
-        /* PAGINACIÓN                                                  */
-        /* ========================================================== */
+        /* ============================================================= */
+        /* PAGINACIÓN                                                     */
+        /* ============================================================= */
 
         cambiarPagina(pagina) {
 
-            if (
-                pagina === '...'
-            ) {
-
+            if (pagina === '...') {
                 return;
-
             }
-
 
             if (
                 pagina < 1 ||
                 pagina > this.totalPaginas
             ) {
-
                 return;
-
             }
 
+            if (pagina === this.paginaActual) {
+                return;
+            }
 
             this.$emit(
                 'cambiar-pagina',
@@ -541,47 +565,39 @@ export default {
         },
 
 
-        /* ========================================================== */
-        /* NOMBRE COMPLETO                                             */
-        /* ========================================================== */
+        /* ============================================================= */
+        /* NOMBRE COMPLETO                                                */
+        /* ============================================================= */
 
         nombreCompleto(usuario) {
 
             if (!usuario) {
-
                 return 'Sin nombre';
-
             }
-
 
             return (
                 `${usuario.nombre || ''} ` +
                 `${usuario.apellido || ''}`
-            ).trim();
+            ).trim() || 'Sin nombre';
 
         },
 
 
-        /* ========================================================== */
-        /* INICIALES                                                   */
-        /* ========================================================== */
+        /* ============================================================= */
+        /* INICIALES                                                      */
+        /* ============================================================= */
 
         iniciales(usuario) {
 
             if (!usuario) {
-
                 return 'U';
-
             }
-
 
             const primera =
                 (usuario.nombre || '').charAt(0);
 
-
             const segunda =
                 (usuario.apellido || '').charAt(0);
-
 
             return (
                 primera +
@@ -591,24 +607,15 @@ export default {
         },
 
 
-        /* ========================================================== */
-        /* NOMBRE DEL ROL                                              */
-        /* ========================================================== */
+        /* ============================================================= */
+        /* NOMBRE DEL ROL                                                 */
+        /* ============================================================= */
 
         nombreRol(rol) {
 
             if (!rol) {
-
                 return 'Sin rol';
-
             }
-
-
-            const nombre =
-                rol.nombre ||
-                rol.name ||
-                rol.slug ||
-                '';
 
 
             const nombres = {
@@ -630,8 +637,10 @@ export default {
 
             return (
                 nombres[rol.slug] ||
-                nombres[nombre] ||
-                nombre
+                rol.nombre ||
+                rol.name ||
+                rol.slug ||
+                'Sin rol'
             );
 
         },

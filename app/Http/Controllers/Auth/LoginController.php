@@ -38,18 +38,20 @@ class LoginController extends Controller
             ], 401);
         }
 
+        $user = $login['user'];
+
         return response()->json([
             'success' => true,
             'message' => 'Inicio de sesión correcto.',
             'token' => $login['token'],
             'user' => [
-                'id' => $login['user']->id,
-                'nombre' => $login['user']->nombre,
-                'apellido' => $login['user']->apellido,
-                'email' => $login['user']->email,
-                'role' => $login['user']->role->slug,
-                'departamento' => $login['user']->departamento->nombre,
-            ]
+                'id' => $user->id,
+                'nombre' => $user->nombre,
+                'apellido' => $user->apellido,
+                'email' => $user->email,
+                'role' => $user->role?->slug,
+                'departamento' => $user->departamento?->nombre,
+            ],
         ]);
     }
 
@@ -58,15 +60,18 @@ class LoginController extends Controller
      */
     public function user(Request $request): JsonResponse
     {
-        $user = $request->user()->load('role', 'departamento');
+        $user = $request->user()->load(
+            'role',
+            'departamento'
+        );
 
         return response()->json([
             'id' => $user->id,
             'nombre' => $user->nombre,
             'apellido' => $user->apellido,
             'email' => $user->email,
-            'role' => $user->role->slug,
-            'departamento' => $user->departamento->nombre,
+            'role' => $user->role?->slug,
+            'departamento' => $user->departamento?->nombre,
         ]);
     }
 
@@ -75,11 +80,13 @@ class LoginController extends Controller
      */
     public function logout(Request $request): JsonResponse
     {
-        $this->authService->logout($request->user());
+        $this->authService->logout(
+            $request->user()
+        );
 
         return response()->json([
             'success' => true,
-            'message' => 'Sesión cerrada correctamente.'
+            'message' => 'Sesión cerrada correctamente.',
         ]);
     }
 }

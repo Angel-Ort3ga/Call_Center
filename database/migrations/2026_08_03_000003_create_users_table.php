@@ -1,3 +1,4 @@
+
 <?php
 
 use Illuminate\Database\Migrations\Migration;
@@ -12,6 +13,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
+
             $table->id();
 
             // Información personal
@@ -30,15 +32,9 @@ return new class extends Migration
             $table->string('foto')->nullable();
 
             // Relaciones
-            $table->foreignId('role_id')
-                ->constrained('roles')
-                ->cascadeOnUpdate()
-                ->restrictOnDelete();
-
-            $table->foreignId('departamento_id')
-                ->constrained('departamentos')
-                ->cascadeOnUpdate()
-                ->restrictOnDelete();
+            // Las claves foráneas se agregan en una migración posterior.
+            $table->unsignedBigInteger('role_id');
+            $table->unsignedBigInteger('departamento_id')->nullable();
 
             // Estado
             $table->boolean('activo')->default(true);

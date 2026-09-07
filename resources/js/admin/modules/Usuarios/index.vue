@@ -29,9 +29,12 @@
 
             <button
                 type="button"
+                aria-label="Cerrar mensaje"
                 @click="error = null"
             >
+
                 <i class="fas fa-times"></i>
+
             </button>
 
         </div>
@@ -54,9 +57,12 @@
 
             <button
                 type="button"
+                aria-label="Cerrar mensaje"
                 @click="mensaje = null"
             >
+
                 <i class="fas fa-times"></i>
+
             </button>
 
         </div>
@@ -120,7 +126,9 @@
                         :key="rol.id"
                         :value="rol.id"
                     >
+
                         {{ nombreRol(rol) }}
+
                     </option>
 
                 </select>
@@ -143,7 +151,9 @@
                         :key="departamento.id"
                         :value="departamento.id"
                     >
+
                         {{ departamento.nombre }}
+
                     </option>
 
                 </select>
@@ -218,7 +228,7 @@
         <!-- TABLA                                                     -->
         <!-- ========================================================= -->
 
-        <div class="content-card">
+        <div class="content-card users-card">
 
             <div class="card-header">
 
@@ -237,7 +247,9 @@
 
                 <div class="total-badge">
 
-                    {{ totalUsuarios }}
+                    <span>
+                        {{ totalUsuarios }}
+                    </span>
 
                     {{
                         totalUsuarios === 1
@@ -250,14 +262,20 @@
             </div>
 
 
-            <!-- CARGANDO -->
+            <!-- ===================================================== -->
+            <!-- CARGANDO                                              -->
+            <!-- ===================================================== -->
 
             <div
                 v-if="cargando"
                 class="loading-container"
             >
 
-                <i class="fas fa-spinner fa-spin"></i>
+                <div class="loading-icon">
+
+                    <i class="fas fa-spinner fa-spin"></i>
+
+                </div>
 
                 <span>
                     Cargando usuarios...
@@ -266,7 +284,9 @@
             </div>
 
 
-            <!-- TABLA -->
+            <!-- ===================================================== -->
+            <!-- TABLA                                                  -->
+            <!-- ===================================================== -->
 
             <UsuariosTable
                 v-else
@@ -302,15 +322,15 @@
 
 
         <!-- ========================================================= -->
-        <!-- MODAL CONFIRMACIÓN                                         -->
+        <!-- MODAL CAMBIAR ESTADO                                      -->
         <!-- ========================================================= -->
 
         <UsuarioConfirmModal
             v-if="usuarioConfirmacion"
+            :mostrar="!!usuarioConfirmacion"
             :usuario="usuarioConfirmacion"
             :accion="accionConfirmacion"
             :procesando="procesandoAccion"
-            :nombre-completo="nombreCompleto"
             @confirmar="confirmarAccion"
             @cerrar="cerrarConfirmacion"
         />
@@ -369,65 +389,44 @@ export default {
             filtros: {
 
                 search: '',
-
                 role_id: '',
-
                 departamento_id: '',
-
                 activo: '',
-
                 per_page: 10,
 
             },
 
 
             paginaActual: 1,
-
             totalPaginas: 1,
-
             totalUsuarios: 0,
 
 
             cargando: false,
-
             guardando: false,
-
             procesandoAccion: false,
 
             error: null,
-
             mensaje: null,
 
 
             mostrarFormulario: false,
-
             modoEdicion: false,
-
             usuarioEditando: null,
 
 
             form: {
 
                 id: null,
-
                 nombre: '',
-
                 apellido: '',
-
                 username: '',
-
                 email: '',
-
                 telefono: '',
-
                 extension: '',
-
                 password: '',
-
                 role_id: '',
-
                 departamento_id: '',
-
                 activo: true,
 
             },
@@ -437,7 +436,6 @@ export default {
 
 
             usuarioConfirmacion: null,
-
             accionConfirmacion: null,
 
         };
@@ -454,19 +452,16 @@ export default {
 
     methods: {
 
-
-        /* =========================================================
-           DATOS INICIALES
-        ========================================================= */
+        /* ========================================================= */
+        /* DATOS INICIALES                                           */
+        /* ========================================================= */
 
         async cargarDatosIniciales() {
 
             await Promise.all([
 
                 this.cargarUsuarios(),
-
                 this.cargarRoles(),
-
                 this.cargarDepartamentos(),
 
             ]);
@@ -474,14 +469,13 @@ export default {
         },
 
 
-        /* =========================================================
-           USUARIOS
-        ========================================================= */
+        /* ========================================================= */
+        /* USUARIOS                                                   */
+        /* ========================================================= */
 
         async cargarUsuarios() {
 
             this.cargando = true;
-
             this.error = null;
 
 
@@ -503,16 +497,6 @@ export default {
                     response.data.data ||
                     response.data;
 
-
-                /*
-                 * Laravel paginator:
-                 *
-                 * response.data.data
-                 *     -> objeto paginator
-                 *
-                 * paginator.data
-                 *     -> usuarios
-                 */
 
                 this.usuarios =
                     data.data || [];
@@ -539,9 +523,7 @@ export default {
 
 
                 this.usuarios = [];
-
                 this.totalUsuarios = 0;
-
                 this.totalPaginas = 1;
 
 
@@ -549,6 +531,7 @@ export default {
                     error,
                     'No fue posible cargar los usuarios.'
                 );
+
 
             } finally {
 
@@ -559,9 +542,9 @@ export default {
         },
 
 
-        /* =========================================================
-           ROLES
-        ========================================================= */
+        /* ========================================================= */
+        /* ROLES                                                      */
+        /* ========================================================= */
 
         async cargarRoles() {
 
@@ -596,19 +579,12 @@ export default {
                 }
 
 
-                console.log(
-                    'Roles cargados:',
-                    this.roles
-                );
-
-
             } catch (error) {
 
                 console.error(
                     'Error al cargar roles:',
                     error
                 );
-
 
                 this.roles = [];
 
@@ -617,9 +593,9 @@ export default {
         },
 
 
-        /* =========================================================
-           DEPARTAMENTOS
-        ========================================================= */
+        /* ========================================================= */
+        /* DEPARTAMENTOS                                              */
+        /* ========================================================= */
 
         async cargarDepartamentos() {
 
@@ -654,19 +630,12 @@ export default {
                 }
 
 
-                console.log(
-                    'Departamentos cargados:',
-                    this.departamentos
-                );
-
-
             } catch (error) {
 
                 console.error(
                     'Error al cargar departamentos:',
                     error
                 );
-
 
                 this.departamentos = [];
 
@@ -675,9 +644,9 @@ export default {
         },
 
 
-        /* =========================================================
-           FILTROS
-        ========================================================= */
+        /* ========================================================= */
+        /* FILTROS                                                    */
+        /* ========================================================= */
 
         buscar() {
 
@@ -693,13 +662,9 @@ export default {
             this.filtros = {
 
                 search: '',
-
                 role_id: '',
-
                 departamento_id: '',
-
                 activo: '',
-
                 per_page: 10,
 
             };
@@ -732,47 +697,21 @@ export default {
         },
 
 
-        /* =========================================================
-           NUEVO USUARIO
-        ========================================================= */
+        /* ========================================================= */
+        /* NUEVO USUARIO                                              */
+        /* ========================================================= */
 
         abrirFormulario() {
 
             this.error = null;
-
             this.mensaje = null;
-
             this.errores = {};
 
             this.modoEdicion = false;
-
             this.usuarioEditando = null;
 
 
             this.resetFormulario();
-
-
-            /*
-             * Esto nos ayuda a detectar inmediatamente
-             * si el problema de los roles viene del backend.
-             */
-
-            if (!this.roles.length) {
-
-                console.warn(
-                    'No hay roles disponibles para seleccionar.'
-                );
-
-            }
-
-
-            if (!this.departamentos.length) {
-
-                console.warn(
-                    'No hay departamentos disponibles para seleccionar.'
-                );
-
-            }
 
 
             this.mostrarFormulario = true;
@@ -780,27 +719,22 @@ export default {
         },
 
 
-        /* =========================================================
-           EDITAR USUARIO
-        ========================================================= */
+        /* ========================================================= */
+        /* EDITAR USUARIO                                             */
+        /* ========================================================= */
 
         editarUsuario(usuario) {
 
             if (!usuario) {
-
                 return;
-
             }
 
 
             this.error = null;
-
             this.mensaje = null;
-
             this.errores = {};
 
             this.modoEdicion = true;
-
             this.usuarioEditando = usuario;
 
 
@@ -857,16 +791,14 @@ export default {
         },
 
 
-        /* =========================================================
-           CERRAR FORMULARIO
-        ========================================================= */
+        /* ========================================================= */
+        /* CERRAR FORMULARIO                                          */
+        /* ========================================================= */
 
         cerrarFormulario() {
 
             if (this.guardando) {
-
                 return;
-
             }
 
 
@@ -882,34 +814,24 @@ export default {
         },
 
 
-        /* =========================================================
-           RESET
-        ========================================================= */
+        /* ========================================================= */
+        /* RESET FORMULARIO                                           */
+        /* ========================================================= */
 
         resetFormulario() {
 
             this.form = {
 
                 id: null,
-
                 nombre: '',
-
                 apellido: '',
-
                 username: '',
-
                 email: '',
-
                 telefono: '',
-
                 extension: '',
-
                 password: '',
-
                 role_id: '',
-
                 departamento_id: '',
-
                 activo: true,
 
             };
@@ -920,9 +842,9 @@ export default {
         },
 
 
-        /* =========================================================
-           CREAR / ACTUALIZAR
-        ========================================================= */
+        /* ========================================================= */
+        /* CREAR / ACTUALIZAR                                         */
+        /* ========================================================= */
 
         async guardarUsuario() {
 
@@ -942,16 +864,11 @@ export default {
                 let response;
 
 
-                /* =================================================
-                   CREAR
-                ================================================= */
+                /* ================================================= */
+                /* CREAR                                               */
+                /* ================================================= */
 
                 if (!editando) {
-
-                    /*
-                     * Creamos una copia para no modificar
-                     * directamente el formulario.
-                     */
 
                     const datos = {
 
@@ -997,9 +914,9 @@ export default {
                 }
 
 
-                /* =================================================
-                   EDITAR
-                ================================================= */
+                /* ================================================= */
+                /* EDITAR                                               */
+                /* ================================================= */
 
                 else {
 
@@ -1035,11 +952,6 @@ export default {
                     };
 
 
-                    /*
-                     * La contraseña solamente se manda
-                     * si el usuario escribió una nueva.
-                     */
-
                     if (
                         this.form.password &&
                         this.form.password.trim() !== ''
@@ -1050,11 +962,6 @@ export default {
 
                     }
 
-
-                    /*
-                     * IMPORTANTE:
-                     * Esta ruta debe existir en api.php.
-                     */
 
                     response =
                         await axios.put(
@@ -1101,10 +1008,6 @@ export default {
                 );
 
 
-                /*
-                 * ERRORES DE VALIDACIÓN
-                 */
-
                 if (
                     error.response &&
                     error.response.status === 422
@@ -1120,22 +1023,12 @@ export default {
                         'Revisa los datos del formulario.';
 
 
-                    /*
-                     * Volvemos a abrir el modal
-                     * para mostrar los errores.
-                     */
-
                     this.mostrarFormulario = true;
-
 
                     return;
 
                 }
 
-
-                /*
-                 * RESTO DE ERRORES
-                 */
 
                 this.manejarError(
                     error,
@@ -1153,38 +1046,46 @@ export default {
         },
 
 
-        /* =========================================================
-           CAMBIAR ESTADO
-        ========================================================= */
+        /* ========================================================= */
+        /* CAMBIAR ESTADO                                             */
+        /* ========================================================= */
 
         cambiarEstado(usuario) {
 
             if (!usuario) {
-
                 return;
-
             }
 
 
-            this.usuarioConfirmacion = usuario;
+            this.error = null;
+            this.mensaje = null;
 
-            this.accionConfirmacion = 'estado';
+
+            this.usuarioConfirmacion =
+                usuario;
+
+
+            this.accionConfirmacion =
+                'estado';
 
         },
 
 
-        /* =========================================================
-           CERRAR CONFIRMACIÓN
-        ========================================================= */
+        /* ========================================================= */
+        /* CERRAR CONFIRMACIÓN                                        */
+        /* ========================================================= */
 
         cerrarConfirmacion() {
 
-            if (this.procesandoAccion) {
-
-                return;
-
-            }
-
+            /*
+             * IMPORTANTE:
+             *
+             * NO debemos comprobar procesandoAccion aquí.
+             *
+             * confirmarAccion() necesita poder cerrar
+             * el modal mientras procesandoAccion todavía
+             * está en true.
+             */
 
             this.usuarioConfirmacion = null;
 
@@ -1193,17 +1094,14 @@ export default {
         },
 
 
-        /* =========================================================
-           CONFIRMAR ACCIÓN
-        ========================================================= */
+        /* ========================================================= */
+        /* CONFIRMAR CAMBIO DE ESTADO                                 */
+        /* ========================================================= */
 
         async confirmarAccion() {
-             console.log('CONFIRMAR ACCION EJECUTADO');
 
             if (!this.usuarioConfirmacion) {
-
                 return;
-
             }
 
 
@@ -1216,14 +1114,16 @@ export default {
                 this.usuarioConfirmacion;
 
 
-            try {
+            /*
+             * Guardamos el estado anterior porque después
+             * de la petición el backend lo cambiará.
+             */
 
-                /*
-                 * Una sola acción:
-                 *
-                 * activo -> desactivar
-                 * inactivo -> activar
-                 */
+            const estabaActivo =
+                Boolean(usuario.activo);
+
+
+            try {
 
                 const response =
                     await axios.patch(
@@ -1231,20 +1131,36 @@ export default {
                     );
 
 
+                /* ================================================= */
+                /* MENSAJE                                            */
+                /* ================================================= */
+
                 this.mensaje =
                     response.data.message ||
                     (
-                        usuario.activo
+                        estabaActivo
                             ? 'Usuario desactivado correctamente.'
                             : 'Usuario activado correctamente.'
                     );
 
 
+                /* ================================================= */
+                /* CERRAR MODAL                                        */
+                /* ================================================= */
+
                 this.cerrarConfirmacion();
 
 
+                /* ================================================= */
+                /* ACTUALIZAR TABLA                                    */
+                /* ================================================= */
+
                 await this.cargarUsuarios();
 
+
+                /* ================================================= */
+                /* OCULTAR NOTIFICACIÓN                                */
+                /* ================================================= */
 
                 this.ocultarMensaje();
 
@@ -1262,6 +1178,7 @@ export default {
                     'No fue posible cambiar el estado del usuario.'
                 );
 
+
             } finally {
 
                 this.procesandoAccion = false;
@@ -1271,16 +1188,14 @@ export default {
         },
 
 
-        /* =========================================================
-           NOMBRE COMPLETO
-        ========================================================= */
+        /* ========================================================= */
+        /* NOMBRE COMPLETO                                            */
+        /* ========================================================= */
 
         nombreCompleto(usuario) {
 
             if (!usuario) {
-
                 return 'Sin nombre';
-
             }
 
 
@@ -1292,16 +1207,14 @@ export default {
         },
 
 
-        /* =========================================================
-           INICIALES
-        ========================================================= */
+        /* ========================================================= */
+        /* INICIALES                                                  */
+        /* ========================================================= */
 
         iniciales(usuario) {
 
             if (!usuario) {
-
                 return 'U';
-
             }
 
 
@@ -1321,24 +1234,15 @@ export default {
         },
 
 
-        /* =========================================================
-           NOMBRE DEL ROL
-        ========================================================= */
+        /* ========================================================= */
+        /* NOMBRE DEL ROL                                             */
+        /* ========================================================= */
 
         nombreRol(rol) {
 
             if (!rol) {
-
                 return 'Sin rol';
-
             }
-
-
-            const nombre =
-                rol.nombre ||
-                rol.name ||
-                rol.slug ||
-                '';
 
 
             const nombres = {
@@ -1360,16 +1264,18 @@ export default {
 
             return (
                 nombres[rol.slug] ||
-                nombres[nombre] ||
-                nombre
+                rol.nombre ||
+                rol.name ||
+                rol.slug ||
+                'Sin rol'
             );
 
         },
 
 
-        /* =========================================================
-           MANEJAR ERROR
-        ========================================================= */
+        /* ========================================================= */
+        /* MANEJAR ERROR                                               */
+        /* ========================================================= */
 
         manejarError(
             error,
@@ -1426,9 +1332,9 @@ export default {
         },
 
 
-        /* =========================================================
-           OCULTAR MENSAJE
-        ========================================================= */
+        /* ========================================================= */
+        /* OCULTAR MENSAJE                                             */
+        /* ========================================================= */
 
         ocultarMensaje() {
 

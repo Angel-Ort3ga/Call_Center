@@ -1,3 +1,4 @@
+```vue
 <template>
 
     <div
@@ -30,15 +31,12 @@
 
                 </div>
 
-
                 <button
                     type="button"
                     class="text-gray-400 hover:text-gray-600 text-2xl leading-none"
                     @click="$emit('cerrar')"
                 >
-
                     <i class="fas fa-times"></i>
-
                 </button>
 
             </div>
@@ -256,6 +254,121 @@
 
                 </div>
 
+
+                <!-- ====================================================
+                     ACCIONES DE ESTADO
+                ===================================================== -->
+
+                <div
+                    v-if="puedeCambiarEstado"
+                    class="mt-7 pt-6 border-t border-gray-200"
+                >
+
+                    <div class="mb-4">
+
+                        <h3 class="text-sm font-semibold text-gray-800">
+                            Acción de la llamada
+                        </h3>
+
+                        <p class="text-xs text-gray-500 mt-1">
+                            Cambia el estado de acuerdo con tu función.
+                        </p>
+
+                    </div>
+
+
+                    <!-- RECEPCIONISTA -->
+
+                    <button
+                        v-if="puedeTransferir"
+                        type="button"
+                        class="w-full px-4 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                        :disabled="actualizandoEstado"
+                        @click="cambiarEstado('transferida')"
+                    >
+
+                        <span v-if="actualizandoEstado">
+                            Procesando...
+                        </span>
+
+                        <span v-else>
+                            <i class="fas fa-share mr-2"></i>
+                            Transferir llamada
+                        </span>
+
+                    </button>
+
+
+                    <!-- JEFE DE DEPARTAMENTO -->
+
+                    <button
+                        v-if="puedeFinalizar"
+                        type="button"
+                        class="w-full px-4 py-3 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                        :disabled="actualizandoEstado"
+                        @click="cambiarEstado('finalizada')"
+                    >
+
+                        <span v-if="actualizandoEstado">
+                            Procesando...
+                        </span>
+
+                        <span v-else>
+                            <i class="fas fa-check mr-2"></i>
+                            Finalizar llamada
+                        </span>
+
+                    </button>
+
+
+                    <!-- SUPERVISOR / SUPER ADMIN -->
+
+                    <div
+                        v-if="esAdministrador"
+                        class="grid grid-cols-1 sm:grid-cols-3 gap-3"
+                    >
+
+                        <button
+                            type="button"
+                            class="px-4 py-3 bg-yellow-500 text-white rounded-lg font-medium hover:bg-yellow-600 transition disabled:opacity-50"
+                            :disabled="actualizandoEstado || llamada.estado === 'en_proceso'"
+                            @click="cambiarEstado('en_proceso')"
+                        >
+                            En proceso
+                        </button>
+
+                        <button
+                            type="button"
+                            class="px-4 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition disabled:opacity-50"
+                            :disabled="actualizandoEstado || llamada.estado === 'transferida'"
+                            @click="cambiarEstado('transferida')"
+                        >
+                            Transferida
+                        </button>
+
+                        <button
+                            type="button"
+                            class="px-4 py-3 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition disabled:opacity-50"
+                            :disabled="actualizandoEstado || llamada.estado === 'finalizada'"
+                            @click="cambiarEstado('finalizada')"
+                        >
+                            Finalizada
+                        </button>
+
+                    </div>
+
+
+                    <!-- ERROR -->
+
+                    <div
+                        v-if="errorEstado"
+                        class="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700"
+                    >
+                        {{ errorEstado }}
+                    </div>
+
+                </div>
+
             </div>
 
 
@@ -286,6 +399,9 @@
 
 <script>
 
+import axios from 'axios';
+import { getUser } from '../../../../auth/auth';
+
 export default {
 
     name: 'LlamadaDetalleModal',
@@ -306,7 +422,224 @@ export default {
     },
 
 
+    data() {
+
+        return {
+
+            usuario: null,
+
+            actualizandoEstado: false,
+
+            errorEstado: null,
+
+        };
+
+    },
+
+
+    computed: {
+
+        /* ============================================================
+           ROL ACTUAL
+        ============================================================= */
+
+        rolUsuario() {
+
+            if (
+                !this.usuario ||
+                !this.usuario.role
+            ) {
+                return null;
+            }
+
+            return this.usuario.role.slug;
+
+        },
+
+
+        /* ============================================================
+           RECEPCIONISTA
+        ============================================================= */
+
+        puedeTransferir() {
+
+            return (
+                this.rolUsuario === 'recepcionista' &&
+                this.llamada &&
+                this.llamada.estado === 'en_proceso'
+            );
+
+        },
+
+
+        /* ============================================================
+           JEFE DE DEPARTAMENTO
+        ============================================================= */
+
+        puedeFinalizar() {
+
+            return (
+                this.rolUsuario === 'jefe_departamento' &&
+                this.llamada &&
+                this.llamada.estado === 'transferida'
+            );
+
+        },
+
+
+        /* ============================================================
+           SUPERVISOR / SUPER ADMIN
+        ============================================================= */
+
+        esAdministrador() {
+
+            return (
+                this.rolUsuario === 'super_admin' ||
+                this.rolUsuario === 'supervisor'
+            );
+
+        },
+
+
+        /* ============================================================
+           ¿MOSTRAR ACCIONES?
+        ============================================================= */
+
+        puedeCambiarEstado() {
+
+            return (
+                this.puedeTransferir ||
+                this.puedeFinalizar ||
+                this.esAdministrador
+            );
+
+        },
+
+    },
+
+
+    watch: {
+
+        visible(valor) {
+
+            if (valor) {
+                this.cargarUsuario();
+            }
+
+        },
+
+    },
+
+
     methods: {
+
+        /* ============================================================
+           USUARIO AUTENTICADO
+        ============================================================= */
+
+        cargarUsuario() {
+
+            this.usuario = getUser();
+console.log('USUARIO AUTENTICADO:', this.usuario);
+    console.log('ROL:', this.usuario?.role);
+    console.log('SLUG:', this.usuario?.role?.slug);
+        },
+
+
+        /* ============================================================
+           CAMBIAR ESTADO
+        ============================================================= */
+
+        async cambiarEstado(nuevoEstado) {
+
+            if (
+                !this.llamada ||
+                this.actualizandoEstado
+            ) {
+                return;
+            }
+
+            const mensajes = {
+
+                transferida:
+                    '¿Deseas transferir esta llamada al departamento?',
+
+                finalizada:
+                    '¿Deseas marcar esta llamada como finalizada?',
+
+                en_proceso:
+                    '¿Deseas regresar esta llamada a estado en proceso?',
+
+            };
+
+            const confirmar = window.confirm(
+                mensajes[nuevoEstado]
+                    || '¿Deseas cambiar el estado de la llamada?'
+            );
+
+            if (!confirmar) {
+                return;
+            }
+
+            this.actualizandoEstado = true;
+            this.errorEstado = null;
+
+            try {
+
+                const response = await axios.patch(
+                    `/api/admin/llamadas/${this.llamada.id}/estado`,
+                    {
+                        estado: nuevoEstado,
+                    }
+                );
+
+                const llamadaActualizada =
+                    response.data.data;
+
+                this.$emit(
+                    'estado-actualizado',
+                    llamadaActualizada
+                );
+
+            } catch (error) {
+
+                console.error(
+                    'Error al cambiar estado:',
+                    error
+                );
+
+                if (
+                    error.response &&
+                    error.response.status === 403
+                ) {
+
+                    this.errorEstado =
+                        error.response.data.message
+                        || 'No tienes permisos para realizar esta acción.';
+
+                } else if (
+                    error.response &&
+                    error.response.status === 422
+                ) {
+
+                    this.errorEstado =
+                        'Los datos enviados no son válidos.';
+
+                } else {
+
+                    this.errorEstado =
+                        'No fue posible actualizar el estado de la llamada.';
+
+                }
+
+            } finally {
+
+                this.actualizandoEstado = false;
+
+            }
+
+        },
+
 
         /* ============================================================
            FECHA
@@ -314,23 +647,25 @@ export default {
 
         formatearFecha(fecha) {
 
-    if (!fecha) {
-        return '—';
-    }
+            if (!fecha) {
+                return '—';
+            }
 
-    const valor = String(fecha).substring(0, 10);
+            const valor =
+                String(fecha).substring(0, 10);
 
-    const partes = valor.split('-');
+            const partes =
+                valor.split('-');
 
-    if (partes.length === 3) {
+            if (partes.length === 3) {
 
-        return `${partes[2]}/${partes[1]}/${partes[0]}`;
+                return `${partes[2]}/${partes[1]}/${partes[0]}`;
 
-    }
+            }
 
-    return valor;
+            return valor;
 
-},
+        },
 
 
         /* ============================================================
@@ -470,3 +805,4 @@ export default {
 };
 
 </script>
+```

@@ -1,3 +1,4 @@
+
 <?php
 
 use Illuminate\Database\Migrations\Migration;
@@ -25,10 +26,8 @@ return new class extends Migration
 
             $table->string('correo')->nullable();
 
-             $table->foreignId('responsable_id')
-                ->nullable()
-                ->constrained('users')
-                ->nullOnDelete();
+            // Se agrega la relación con users posteriormente.
+            $table->unsignedBigInteger('responsable_id')->nullable();
 
             $table->time('horario_inicio');
 
