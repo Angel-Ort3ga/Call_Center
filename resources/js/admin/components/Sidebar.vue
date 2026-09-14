@@ -152,6 +152,8 @@ export default {
             return [
                 'super_admin',
                 'supervisor',
+                'jefe_departamento',
+                'recepcionista',
             ].includes(this.usuario?.role);
         },
 
@@ -165,7 +167,7 @@ export default {
             return [
                 'super_admin',
                 'supervisor',
-                'jefe_departamento',
+                //'jefe_departamento',
                 'recepcionista',
             ].includes(this.usuario?.role);
         },

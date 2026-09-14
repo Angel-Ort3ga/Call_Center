@@ -9,46 +9,94 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
     /**
-     * Dashboard general.
-     *
-     * Permisos:
-     * - Super Admin: todas las llamadas
-     * - Supervisor: todas las llamadas
-     * - Jefe de departamento: solo su departamento
-     * - Recepcionista: solo sus llamadas
+     * Dashboard general del sistema.
      */
     public function index(Request $request): JsonResponse
     {
-        /*
-        |--------------------------------------------------------------------------
-        | USUARIO AUTENTICADO
-        |--------------------------------------------------------------------------
-        */
-
         $usuario = $request->user();
 
         /*
         |--------------------------------------------------------------------------
-        | FECHA DEL DASHBOARD
+        | PERIODO
         |--------------------------------------------------------------------------
         */
 
-        $fecha = $request->input(
-            'fecha',
-            now()->toDateString()
-        );
+        $periodo = $request->input('periodo', 'hoy');
+
+        $fechaInicio = null;
+        $fechaFin = null;
+
+        switch ($periodo) {
+
+            case 'semana':
+
+                $fechaInicio = now()->startOfWeek();
+                $fechaFin = now()->endOfWeek();
+
+                break;
+
+            case 'mes':
+
+                $fechaInicio = now()->startOfMonth();
+                $fechaFin = now()->endOfMonth();
+
+                break;
+
+            case 'personalizado':
+
+                $fechaInicioInput = $request->input('fecha_inicio');
+                $fechaFinInput = $request->input('fecha_fin');
+
+                if ($fechaInicioInput && $fechaFinInput) {
+
+                    try {
+
+                        $fechaInicio = Carbon::parse(
+                            $fechaInicioInput
+                        )->startOfDay();
+
+                        $fechaFin = Carbon::parse(
+                            $fechaFinInput
+                        )->endOfDay();
+                    } catch (\Throwable $e) {
+
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'Las fechas proporcionadas no son válidas.',
+                        ], 422);
+                    }
+                } else {
+
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Debes proporcionar fecha_inicio y fecha_fin.',
+                    ], 422);
+                }
+
+                break;
+
+            case 'hoy':
+
+            default:
+
+                $periodo = 'hoy';
+
+                $fechaInicio = now()->startOfDay();
+                $fechaFin = now()->endOfDay();
+
+                break;
+        }
+
 
         /*
         |--------------------------------------------------------------------------
         | USUARIOS
         |--------------------------------------------------------------------------
-        |
-        | Esta información solamente se muestra de forma general.
-        |
         */
 
         $usuarios = [
@@ -65,6 +113,7 @@ class DashboardController extends Controller
             )->count(),
         ];
 
+
         /*
         |--------------------------------------------------------------------------
         | DEPARTAMENTOS
@@ -78,107 +127,98 @@ class DashboardController extends Controller
                 'activo',
                 true
             )->count(),
+
+            'inactivos' => Departamento::where(
+                'activo',
+                false
+            )->count(),
         ];
+
 
         /*
         |--------------------------------------------------------------------------
         | CONSULTA BASE DE LLAMADAS
         |--------------------------------------------------------------------------
-        |
-        | A partir de esta consulta aplicamos los permisos.
-        |
         */
 
         $llamadasQuery = Llamada::query()
-            ->whereDate('fecha', $fecha);
+            ->whereBetween(
+                'fecha',
+                [
+                    $fechaInicio->toDateString(),
+                    $fechaFin->toDateString(),
+                ]
+            );
+
 
         /*
         |--------------------------------------------------------------------------
-        | FILTRO POR ROL
+        | PERMISOS SEGÚN ROL
         |--------------------------------------------------------------------------
         */
 
         if ($usuario) {
 
-            /*
-            |------------------------------------------------------------------
-            | Super Admin y Supervisor
-            |------------------------------------------------------------------
-            |
-            | Pueden consultar todas las llamadas.
-            |
-            */
-
             if (
                 $usuario->esSuperAdmin() ||
                 $usuario->esSupervisor()
             ) {
-                // Sin filtro adicional.
-            }
 
-            /*
-            |------------------------------------------------------------------
-            | Jefe de departamento
-            |------------------------------------------------------------------
-            */ elseif ($usuario->esJefeDepartamento()) {
+                // Puede consultar todas las llamadas.
+
+            } elseif ($usuario->esJefeDepartamento()) {
 
                 $llamadasQuery->where(
                     'departamento_id',
                     $usuario->departamento_id
                 );
-            }
-
-            /*
-            |------------------------------------------------------------------
-            | Recepcionista
-            |------------------------------------------------------------------
-            */ elseif ($usuario->esRecepcionista()) {
+            } elseif ($usuario->esRecepcionista()) {
 
                 $llamadasQuery->where(
                     'usuario_id',
                     $usuario->id
                 );
-            }
+            } else {
 
-            /*
-            |------------------------------------------------------------------
-            | Cualquier otro usuario
-            |------------------------------------------------------------------
-            |
-            | Por seguridad no podrá visualizar llamadas.
-            |
-            */ else {
+                // Usuario sin permisos.
 
-                $llamadasQuery->whereRaw('1 = 0');
+                $llamadasQuery->whereRaw(
+                    '1 = 0'
+                );
             }
         }
 
+
         /*
         |--------------------------------------------------------------------------
-        | LLAMADAS DEL DÍA
+        | RESUMEN DE LLAMADAS
         |--------------------------------------------------------------------------
         */
 
         $totalLlamadas = (clone $llamadasQuery)
             ->count();
 
-        /*
-        |--------------------------------------------------------------------------
-        | LLAMADAS POR ESTADO
-        |--------------------------------------------------------------------------
-        */
-
         $enProceso = (clone $llamadasQuery)
-            ->where('estado', 'en_proceso')
+            ->where(
+                'estado',
+                'en_proceso'
+            )
             ->count();
 
         $transferidas = (clone $llamadasQuery)
-            ->where('estado', 'transferida')
+            ->where(
+                'estado',
+                'transferida'
+            )
             ->count();
 
         $finalizadas = (clone $llamadasQuery)
-            ->where('estado', 'finalizada')
+            ->where(
+                'estado',
+                'finalizada'
+            )
             ->count();
+
 
         /*
         |--------------------------------------------------------------------------
@@ -191,9 +231,15 @@ class DashboardController extends Controller
                 'departamento_id',
                 DB::raw('COUNT(*) as total')
             )
-            ->with('departamento:id,nombre')
-            ->groupBy('departamento_id')
-            ->orderByDesc('total')
+            ->with(
+                'departamento:id,nombre'
+            )
+            ->groupBy(
+                'departamento_id'
+            )
+            ->orderByDesc(
+                'total'
+            )
             ->get()
             ->map(function ($item) {
 
@@ -201,13 +247,14 @@ class DashboardController extends Controller
                     'departamento_id' => $item->departamento_id,
 
                     'departamento' =>
-                    $item->departamento?->nombre,
+                    $item->departamento?->nombre
+                        ?? 'Sin departamento',
 
-                    'total' =>
-                    (int) $item->total,
+                    'total' => (int) $item->total,
                 ];
             })
             ->values();
+
 
         /*
         |--------------------------------------------------------------------------
@@ -220,25 +267,36 @@ class DashboardController extends Controller
                 'categoria',
                 DB::raw('COUNT(*) as total')
             )
-            ->groupBy('categoria')
-            ->orderByDesc('total')
+            ->groupBy(
+                'categoria'
+            )
+            ->orderByDesc(
+                'total'
+            )
             ->get()
             ->map(function ($item) {
 
                 return [
                     'categoria' =>
-                    $item->categoria,
+                    $item->categoria
+                        ?? 'sin_categoria',
 
-                    'total' =>
-                    (int) $item->total,
+                    'total' => (int) $item->total,
                 ];
             })
             ->values();
+
 
         /*
         |--------------------------------------------------------------------------
         | LLAMADAS POR HORA
         |--------------------------------------------------------------------------
+        |
+        | Para "hoy" mostramos las llamadas distribuidas por hora.
+        |
+        | Para semana/mes/personalizado también agrupamos por hora,
+        | permitiendo ver cuáles son las horas con mayor actividad.
+        |
         */
 
         $porHora = (clone $llamadasQuery)
@@ -246,25 +304,85 @@ class DashboardController extends Controller
                 DB::raw('HOUR(hora) as hora'),
                 DB::raw('COUNT(*) as total')
             )
-            ->groupBy(DB::raw('HOUR(hora)'))
-            ->orderBy('hora')
+            ->groupBy(
+                DB::raw('HOUR(hora)')
+            )
+            ->orderBy(
+                'hora'
+            )
             ->get()
             ->map(function ($item) {
 
                 return [
-                    'hora' =>
-                    str_pad(
+                    'hora' => str_pad(
                         $item->hora,
                         2,
                         '0',
                         STR_PAD_LEFT
                     ) . ':00',
 
-                    'total' =>
-                    (int) $item->total,
+                    'total' => (int) $item->total,
                 ];
             })
             ->values();
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | LLAMADAS POR DÍA
+        |--------------------------------------------------------------------------
+        |
+        | Esta información será utilizada posteriormente para mostrar
+        | la evolución de llamadas durante la semana/mes.
+        |
+        */
+
+        $porDia = (clone $llamadasQuery)
+            ->select(
+                'fecha',
+                DB::raw('COUNT(*) as total')
+            )
+            ->groupBy(
+                'fecha'
+            )
+            ->orderBy(
+                'fecha'
+            )
+            ->get()
+            ->map(function ($item) {
+
+                return [
+                    'fecha' => Carbon::parse(
+                        $item->fecha
+                    )->format('Y-m-d'),
+
+                    'total' => (int) $item->total,
+                ];
+            })
+            ->values();
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | INFORMACIÓN DEL USUARIO ACTUAL
+        |--------------------------------------------------------------------------
+        */
+
+        $informacionUsuario = [
+            'id' => $usuario?->id,
+
+            'nombre' => $usuario
+                ? trim(
+                    ($usuario->nombre ?? '') .
+                        ' ' .
+                        ($usuario->apellido ?? '')
+                )
+                : null,
+
+            'departamento_id' =>
+            $usuario?->departamento_id,
+        ];
+
 
         /*
         |--------------------------------------------------------------------------
@@ -280,44 +398,50 @@ class DashboardController extends Controller
 
                 /*
                 |--------------------------------------------------------------------------
-                | Fecha
+                | PERIODO
                 |--------------------------------------------------------------------------
                 */
 
-                'fecha' => $fecha,
+                'periodo' => $periodo,
+
+                'fecha_inicio' =>
+                $fechaInicio->toDateString(),
+
+                'fecha_fin' =>
+                $fechaFin->toDateString(),
+
 
                 /*
                 |--------------------------------------------------------------------------
-                | Información del usuario
+                | USUARIO
                 |--------------------------------------------------------------------------
                 */
 
-                'usuario' => [
-                    'id' => $usuario?->id,
-                    'nombre' => $usuario?->name,
-                    'departamento_id' =>
-                    $usuario?->departamento_id,
-                ],
+                'usuario' =>
+                $informacionUsuario,
+
 
                 /*
                 |--------------------------------------------------------------------------
-                | Usuarios
+                | USUARIOS
                 |--------------------------------------------------------------------------
                 */
 
                 'usuarios' => $usuarios,
 
+
                 /*
                 |--------------------------------------------------------------------------
-                | Departamentos
+                | DEPARTAMENTOS
                 |--------------------------------------------------------------------------
                 */
 
                 'departamentos' => $departamentos,
 
+
                 /*
                 |--------------------------------------------------------------------------
-                | Llamadas
+                | LLAMADAS
                 |--------------------------------------------------------------------------
                 */
 
@@ -336,9 +460,10 @@ class DashboardController extends Controller
                     $finalizadas,
                 ],
 
+
                 /*
                 |--------------------------------------------------------------------------
-                | Estadísticas
+                | ESTADÍSTICAS
                 |--------------------------------------------------------------------------
                 */
 
@@ -352,6 +477,9 @@ class DashboardController extends Controller
 
                     'por_hora' =>
                     $porHora,
+
+                    'por_dia' =>
+                    $porDia,
                 ],
             ],
         ]);

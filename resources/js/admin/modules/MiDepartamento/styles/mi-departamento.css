@@ -1,10 +1,18 @@
+
+/* =========================================================
+   MI DEPARTAMENTO
+   ========================================================= */
+
 .departamento-page {
     min-height: 100vh;
     padding: 30px;
     background: #f5f7fa;
 }
 
-/* HEADER */
+
+/* =========================================================
+   HEADER
+   ========================================================= */
 
 .page-header {
     display: flex;
@@ -44,7 +52,10 @@
     font-weight: 600;
 }
 
-/* STATS */
+
+/* =========================================================
+   STATS
+   ========================================================= */
 
 .stats-grid {
     display: grid;
@@ -123,9 +134,499 @@
     color: #111827;
 
     font-size: 26px;
+    font-weight: 700;
 }
 
-/* CARD */
+
+/* =========================================================
+   PERIODOS
+   ========================================================= */
+
+.period-card {
+    margin-bottom: 30px;
+
+    padding: 24px;
+
+    background: #ffffff;
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 10px;
+}
+
+.period-header {
+    margin-bottom: 18px;
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    margin: 0;
+
+    color: #1f2937;
+
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.section-title i {
+    color: #2563eb;
+}
+
+.section-subtitle {
+    margin: 5px 0 0;
+
+    color: #6b7280;
+
+    font-size: 13px;
+}
+
+.period-buttons {
+    display: flex;
+    flex-wrap: wrap;
+
+    gap: 10px;
+}
+
+.period-button {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 7px;
+
+    min-height: 40px;
+
+    padding: 0 15px;
+
+    border: 1px solid #d1d5db;
+
+    border-radius: 7px;
+
+    background: #ffffff;
+
+    color: #4b5563;
+
+    cursor: pointer;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease;
+}
+
+.period-button:hover {
+    background: #f9fafb;
+
+    border-color: #9ca3af;
+}
+
+.period-button.active {
+    background: #2563eb;
+
+    border-color: #2563eb;
+
+    color: #ffffff;
+}
+
+.custom-date-filters {
+    display: flex;
+
+    align-items: flex-end;
+
+    gap: 12px;
+
+    margin-top: 18px;
+
+    padding-top: 18px;
+
+    border-top: 1px solid #e5e7eb;
+}
+
+.date-field {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 6px;
+}
+
+.date-field label {
+    color: #4b5563;
+
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.date-input {
+    height: 40px;
+
+    padding: 0 11px;
+
+    border: 1px solid #d1d5db;
+
+    border-radius: 7px;
+
+    background: #ffffff;
+
+    color: #374151;
+
+    outline: none;
+}
+
+.date-input:focus {
+    border-color: #2563eb;
+}
+
+.apply-date-button {
+    height: 40px;
+
+    padding: 0 16px;
+
+    border: none;
+
+    border-radius: 7px;
+
+    background: #2563eb;
+
+    color: #ffffff;
+
+    cursor: pointer;
+
+    font-weight: 600;
+}
+
+.apply-date-button:hover {
+    background: #1d4ed8;
+}
+
+.period-error {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    margin-top: 15px;
+
+    padding: 11px 13px;
+
+    background: #fef2f2;
+
+    border: 1px solid #fecaca;
+
+    border-radius: 7px;
+
+    color: #b91c1c;
+
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   ANALYTICS
+   ========================================================= */
+
+.analytics-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 20px;
+
+    margin-bottom: 20px;
+}
+
+.analytics-card {
+    min-width: 0;
+
+    padding: 24px;
+
+    background: #ffffff;
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 10px;
+}
+
+.analytics-card-header {
+    display: flex;
+
+    align-items: flex-start;
+    justify-content: space-between;
+
+    margin-bottom: 20px;
+}
+
+.analytics-card-title {
+    margin: 0;
+
+    color: #1f2937;
+
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.analytics-card-subtitle {
+    margin: 5px 0 0;
+
+    color: #6b7280;
+
+    font-size: 12px;
+}
+
+
+/* =========================================================
+   CATEGORIAS
+   ========================================================= */
+
+.category-list {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 16px;
+}
+
+.category-item {
+    width: 100%;
+}
+
+.category-info {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 7px;
+}
+
+.category-name {
+    color: #374151;
+
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.category-total {
+    color: #111827;
+
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.category-bar {
+    width: 100%;
+    height: 9px;
+
+    overflow: hidden;
+
+    border-radius: 999px;
+
+    background: #eef2f7;
+}
+
+.category-bar-fill {
+    height: 100%;
+
+    min-width: 3px;
+
+    border-radius: 999px;
+
+    background: #2563eb;
+
+    transition: width 0.3s ease;
+}
+
+
+/* =========================================================
+   MOTIVOS
+   ========================================================= */
+
+.motives-list {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 12px;
+}
+
+.motive-item {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 12px 13px;
+
+    border: 1px solid #eef0f3;
+
+    border-radius: 8px;
+
+    background: #fafafa;
+}
+
+.motive-rank {
+    width: 28px;
+    height: 28px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border-radius: 7px;
+
+    background: #eff6ff;
+
+    color: #2563eb;
+
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.motive-content {
+    min-width: 0;
+
+    flex: 1;
+}
+
+.motive-text {
+    overflow: hidden;
+
+    margin: 0;
+
+    color: #374151;
+
+    font-size: 13px;
+    font-weight: 500;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+}
+
+.motive-total {
+    flex-shrink: 0;
+
+    color: #111827;
+
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.analytics-empty {
+    padding: 30px 15px;
+
+    text-align: center;
+
+    color: #9ca3af;
+
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   HORAS
+   ========================================================= */
+
+.hours-card {
+    margin-bottom: 30px;
+
+    padding: 24px;
+
+    background: #ffffff;
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 10px;
+}
+
+.hours-chart {
+    display: flex;
+
+    align-items: flex-end;
+
+    gap: 10px;
+
+    min-height: 190px;
+
+    padding: 20px 10px 0;
+
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.hour-column {
+    display: flex;
+
+    flex: 1;
+
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: flex-end;
+
+    min-width: 0;
+
+    height: 170px;
+}
+
+.hour-value {
+    margin-bottom: 7px;
+
+    color: #374151;
+
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.hour-bar-container {
+    display: flex;
+
+    align-items: flex-end;
+
+    justify-content: center;
+
+    width: 100%;
+
+    height: 125px;
+}
+
+.hour-bar {
+    width: min(34px, 75%);
+
+    min-height: 4px;
+
+    border-radius: 6px 6px 0 0;
+
+    background: #2563eb;
+
+    transition: height 0.3s ease;
+}
+
+.hour-label {
+    margin-top: 8px;
+
+    color: #6b7280;
+
+    font-size: 11px;
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   CARD DE LLAMADAS
+   ========================================================= */
 
 .calls-card {
     background: #ffffff;
@@ -165,6 +666,13 @@
 }
 
 .refresh-button {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 7px;
+
     padding: 9px 15px;
 
     border: none;
@@ -180,7 +688,34 @@
     font-weight: 600;
 }
 
-/* FILTERS */
+.refresh-button:hover:not(:disabled) {
+    background: #e5e7eb;
+}
+
+.refresh-button:disabled {
+    opacity: 0.6;
+
+    cursor: not-allowed;
+}
+
+.spinning {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
+/* =========================================================
+   FILTERS
+   ========================================================= */
 
 .filters {
     display: flex;
@@ -222,6 +757,10 @@
     outline: none;
 }
 
+.search-box input:focus {
+    border-color: #2563eb;
+}
+
 .filter-select {
     min-width: 170px;
     height: 40px;
@@ -237,7 +776,18 @@
     outline: none;
 }
 
+.filter-select:focus {
+    border-color: #2563eb;
+}
+
 .search-button {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 7px;
+
     height: 40px;
 
     padding: 0 16px;
@@ -255,7 +805,14 @@
     font-weight: 600;
 }
 
-/* TABLE */
+.search-button:hover {
+    background: #1d4ed8;
+}
+
+
+/* =========================================================
+   TABLE
+   ========================================================= */
 
 .table-container {
     width: 100%;
@@ -307,7 +864,10 @@ tr:hover td {
     font-weight: 600;
 }
 
-/* STATUS */
+
+/* =========================================================
+   STATUS
+   ========================================================= */
 
 .status {
     display: inline-flex;
@@ -339,7 +899,10 @@ tr:hover td {
     color: #166534;
 }
 
-/* BUTTON */
+
+/* =========================================================
+   BUTTON
+   ========================================================= */
 
 .view-button {
     padding: 7px 11px;
@@ -357,7 +920,138 @@ tr:hover td {
     font-weight: 600;
 }
 
-/* RESPONSIVE */
+.view-button:hover {
+    background: #dbeafe;
+}
+
+
+/* =========================================================
+   ERROR
+   ========================================================= */
+
+.error-message {
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    margin-bottom: 20px;
+
+    padding: 13px 16px;
+
+    background: #fef2f2;
+
+    border: 1px solid #fecaca;
+
+    border-radius: 8px;
+
+    color: #b91c1c;
+
+    font-size: 14px;
+}
+
+.error-message button {
+    margin-left: auto;
+
+    padding: 6px 12px;
+
+    border: none;
+
+    border-radius: 6px;
+
+    background: #dc2626;
+
+    color: #ffffff;
+
+    cursor: pointer;
+
+    font-weight: 600;
+}
+
+.error-message button:hover {
+    background: #b91c1c;
+}
+
+
+/* =========================================================
+   TABLE MESSAGE
+   ========================================================= */
+
+.table-message {
+    padding: 45px 20px;
+
+    text-align: center;
+
+    color: #6b7280;
+
+    font-size: 14px;
+}
+
+.table-message i {
+    margin-right: 8px;
+}
+
+
+/* =========================================================
+   PAGINATION
+   ========================================================= */
+
+.pagination {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 16px;
+
+    padding: 18px 24px;
+
+    border-top: 1px solid #e5e7eb;
+
+    color: #6b7280;
+
+    font-size: 14px;
+}
+
+.pagination button {
+    width: 34px;
+    height: 34px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid #d1d5db;
+
+    border-radius: 6px;
+
+    background: #ffffff;
+
+    color: #374151;
+
+    cursor: pointer;
+}
+
+.pagination button:hover:not(:disabled) {
+    background: #f3f4f6;
+}
+
+.pagination button:disabled {
+    opacity: 0.4;
+
+    cursor: not-allowed;
+}
+
+.pagination strong {
+    color: #111827;
+}
+
+
+/* =========================================================
+   RESPONSIVE - TABLET
+   ========================================================= */
 
 @media (max-width: 1100px) {
 
@@ -366,7 +1060,24 @@ tr:hover td {
             repeat(2, 1fr);
     }
 
+    .analytics-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .filters {
+        flex-wrap: wrap;
+    }
+
+    .search-box {
+        min-width: 100%;
+    }
+
 }
+
+
+/* =========================================================
+   RESPONSIVE - MOBILE
+   ========================================================= */
 
 @media (max-width: 700px) {
 
@@ -382,12 +1093,71 @@ tr:hover td {
         gap: 15px;
     }
 
+    .page-title {
+        font-size: 24px;
+    }
+
+    .department-name {
+        width: 100%;
+
+        box-sizing: border-box;
+    }
+
     .stats-grid {
         grid-template-columns: 1fr;
+
+        gap: 12px;
+    }
+
+    .stat-card {
+        padding: 18px;
+    }
+
+    .period-card {
+        padding: 18px;
+    }
+
+    .period-buttons {
+        flex-direction: column;
+    }
+
+    .period-button {
+        width: 100%;
+    }
+
+    .custom-date-filters {
+        flex-direction: column;
+
+        align-items: stretch;
+    }
+
+    .date-input,
+    .apply-date-button {
+        width: 100%;
+
+        box-sizing: border-box;
+    }
+
+    .analytics-card,
+    .hours-card {
+        padding: 18px;
+    }
+
+    .hours-chart {
+        gap: 5px;
+
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .hour-bar {
+        width: 70%;
     }
 
     .filters {
         flex-direction: column;
+
+        padding: 18px;
     }
 
     .filter-select,
@@ -395,4 +1165,25 @@ tr:hover td {
         width: 100%;
     }
 
+    .calls-header {
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        gap: 15px;
+
+        padding: 18px;
+    }
+
+    .refresh-button {
+        width: 100%;
+    }
+
+    .pagination {
+        gap: 10px;
+
+        padding: 16px;
+    }
+
 }
+

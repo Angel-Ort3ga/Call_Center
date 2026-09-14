@@ -1,4 +1,3 @@
-```vue
 <template>
     <div class="table-container">
 
@@ -21,8 +20,40 @@
 
             <tbody>
 
+                <!-- CARGANDO -->
+                <tr v-if="cargando">
+
+                    <td
+                        colspan="8"
+                        class="table-message"
+                    >
+                        <i class="fas fa-spinner fa-spin"></i>
+
+                        Cargando llamadas...
+                    </td>
+
+                </tr>
+
+                <!-- SIN LLAMADAS -->
+                <tr
+                    v-else-if="!llamadas.length"
+                >
+
+                    <td
+                        colspan="8"
+                        class="table-message"
+                    >
+                        <i class="fas fa-phone-slash"></i>
+
+                        No hay llamadas para mostrar.
+                    </td>
+
+                </tr>
+
+                <!-- LLAMADAS -->
                 <tr
                     v-for="llamada in llamadas"
+                    v-else
                     :key="llamada.id"
                 >
 
@@ -33,23 +64,23 @@
                     </td>
 
                     <td>
-                        {{ llamada.fecha }}
+                        {{ formatearFecha(llamada.fecha) }}
                     </td>
 
                     <td>
-                        {{ llamada.hora }}
+                        {{ formatearHora(llamada.hora) }}
                     </td>
 
                     <td>
-                        {{ llamada.nombre }}
+                        {{ llamada.nombre || '—' }}
                     </td>
 
                     <td>
-                        {{ llamada.telefono }}
+                        {{ llamada.telefono || '—' }}
                     </td>
 
                     <td>
-                        {{ llamada.categoria }}
+                        {{ formatearCategoria(llamada.categoria) }}
                     </td>
 
                     <td>
@@ -58,7 +89,7 @@
                             class="status"
                             :class="llamada.estado"
                         >
-                            {{ llamada.estadoTexto }}
+                            {{ nombreEstado(llamada.estado) }}
                         </span>
 
                     </td>
@@ -68,6 +99,7 @@
                         <button
                             type="button"
                             class="view-button"
+                            @click="$emit('ver', llamada)"
                         >
                             <i class="fas fa-eye"></i>
 
@@ -94,11 +126,79 @@ export default {
 
         llamadas: {
             type: Array,
-            required: true
-        }
+            required: true,
+        },
 
-    }
+        cargando: {
+            type: Boolean,
+            default: false,
+        },
+    },
 
-}
+    methods: {
+
+        formatearFecha(fecha) {
+
+            if (!fecha) {
+                return '—';
+            }
+
+            const valor =
+                String(fecha).substring(0, 10);
+
+            const partes =
+                valor.split('-');
+
+            if (partes.length === 3) {
+
+                return `${partes[2]}/${partes[1]}/${partes[0]}`;
+            }
+
+            return valor;
+        },
+
+        formatearHora(hora) {
+
+            if (!hora) {
+                return '—';
+            }
+
+            return String(hora).substring(0, 5);
+        },
+
+        formatearCategoria(categoria) {
+
+            const categorias = {
+
+                queja: 'Queja',
+
+                informacion: 'Información',
+
+                tramite: 'Trámite',
+
+                soporte: 'Soporte',
+            };
+
+            return categorias[categoria]
+                || categoria
+                || '—';
+        },
+
+        nombreEstado(estado) {
+
+            const estados = {
+
+                en_proceso: 'En proceso',
+
+                transferida: 'Transferida',
+
+                finalizada: 'Finalizada',
+            };
+
+            return estados[estado]
+                || estado
+                || 'Sin estado';
+        },
+    },
+};
 </script>
-```

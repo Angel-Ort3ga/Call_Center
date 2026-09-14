@@ -1,4 +1,3 @@
-```vue
 <template>
     <div class="stats-grid">
 
@@ -87,11 +86,12 @@ export default {
     name: 'MiDepartamentoResumen',
 
     props: {
+
         resumen: {
             type: Object,
-            required: true
-        }
-    }
+            required: true,
+        },
 
-}
+    },
+};
 </script>

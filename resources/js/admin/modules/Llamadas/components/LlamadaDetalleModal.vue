@@ -445,16 +445,18 @@ export default {
 
         rolUsuario() {
 
-            if (
-                !this.usuario ||
-                !this.usuario.role
-            ) {
-                return null;
-            }
+    if (
+        !this.usuario ||
+        !this.usuario.role
+    ) {
+        return null;
+    }
 
-            return this.usuario.role.slug;
+    return typeof this.usuario.role === 'string'
+        ? this.usuario.role
+        : this.usuario.role.slug;
 
-        },
+},
 
 
         /* ============================================================
@@ -540,9 +542,9 @@ export default {
         cargarUsuario() {
 
             this.usuario = getUser();
-console.log('USUARIO AUTENTICADO:', this.usuario);
-    console.log('ROL:', this.usuario?.role);
-    console.log('SLUG:', this.usuario?.role?.slug);
+//console.log('USUARIO AUTENTICADO:', this.usuario);
+  //  console.log('ROL:', this.usuario?.role);
+    //console.log('SLUG:', this.usuario?.role?.slug);
         },
 
 

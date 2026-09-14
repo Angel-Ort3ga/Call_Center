@@ -61,10 +61,11 @@
         ============================================================= -->
 
         <LlamadaDetalleModal
-            :visible="mostrarDetalle"
-            :llamada="llamadaSeleccionada"
-            @cerrar="cerrarDetalle"
-        />
+    :visible="mostrarDetalle"
+    :llamada="llamadaSeleccionada"
+    @cerrar="cerrarDetalle"
+    @estado-actualizado="estadoActualizado"
+/>
 
     </div>
 
@@ -446,6 +447,16 @@ export default {
             this.llamadaSeleccionada = null;
 
         },
+
+        estadoActualizado(llamadaActualizada) {
+
+    this.llamadaSeleccionada = llamadaActualizada;
+
+    this.cargarLlamadas(
+        this.pagination.current_page
+    );
+
+},
 
     },
 

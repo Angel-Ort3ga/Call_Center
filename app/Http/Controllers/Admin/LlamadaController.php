@@ -21,13 +21,13 @@ class LlamadaController extends Controller
         $query = Llamada::query();
 
         /*
-    |--------------------------------------------------------------------------
-    | Super Administrador y Supervisor
-    |--------------------------------------------------------------------------
-    |
-    | Pueden consultar todas las llamadas.
-    |
-    */
+        |--------------------------------------------------------------------------
+        | Super Administrador y Supervisor
+        |--------------------------------------------------------------------------
+        |
+        | Pueden consultar todas las llamadas.
+        |
+        */
 
         if (
             $usuario->esSuperAdmin() ||
@@ -36,61 +36,220 @@ class LlamadaController extends Controller
             return $query;
         }
 
-
         /*
-    |--------------------------------------------------------------------------
-    | Jefe de departamento
-    |--------------------------------------------------------------------------
-    |
-    | Solo puede consultar llamadas de su departamento.
-    |
-    */
+        |--------------------------------------------------------------------------
+        | Jefe de departamento
+        |--------------------------------------------------------------------------
+        |
+        | Solo puede consultar llamadas de su departamento.
+        |
+        */
 
         if ($usuario->esJefeDepartamento()) {
-
             return $query->where(
                 'departamento_id',
                 $usuario->departamento_id
             );
         }
 
-
         /*
-    |--------------------------------------------------------------------------
-    | Recepcionista
-    |--------------------------------------------------------------------------
-    |
-    | Solo puede consultar llamadas que él registró.
-    |
-    */
+        |--------------------------------------------------------------------------
+        | Recepcionista
+        |--------------------------------------------------------------------------
+        |
+        | Solo puede consultar llamadas que él registró.
+        |
+        */
 
         if ($usuario->esRecepcionista()) {
-
             return $query->where(
                 'usuario_id',
                 $usuario->id
             );
         }
 
-
         /*
-    |--------------------------------------------------------------------------
-    | Usuario sin permisos
-    |--------------------------------------------------------------------------
-    */
+        |--------------------------------------------------------------------------
+        | Usuario sin permisos
+        |--------------------------------------------------------------------------
+        */
 
         return $query->whereRaw('1 = 0');
     }
+
+
+    /**
+     * Aplica el período seleccionado a una consulta.
+     *
+     * Períodos disponibles:
+     *
+     * hoy
+     * semana
+     * mes
+     * todo
+     * personalizado
+     */
+    private function aplicarPeriodo($query, Request $request)
+    {
+        $periodo = $request->input('periodo', 'hoy');
+
+        /*
+        |--------------------------------------------------------------------------
+        | Personalizado
+        |--------------------------------------------------------------------------
+        */
+
+        if ($periodo === 'personalizado') {
+
+            $fechaDesde = $request->input('fecha_desde');
+            $fechaHasta = $request->input('fecha_hasta');
+
+            if ($fechaDesde && $fechaHasta) {
+                $query->whereBetween('fecha', [
+                    $fechaDesde,
+                    $fechaHasta
+                ]);
+            } elseif ($fechaDesde) {
+                $query->whereDate('fecha', '>=', $fechaDesde);
+            } elseif ($fechaHasta) {
+                $query->whereDate('fecha', '<=', $fechaHasta);
+            }
+
+            return $query;
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Hoy
+        |--------------------------------------------------------------------------
+        */
+
+        if ($periodo === 'hoy') {
+
+            $query->whereDate(
+                'fecha',
+                now()->toDateString()
+            );
+
+            return $query;
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Semana actual
+        |--------------------------------------------------------------------------
+        |
+        | Desde el lunes hasta hoy.
+        |
+        */
+
+        if ($periodo === 'semana') {
+
+            $inicioSemana = now()
+                ->startOfWeek()
+                ->toDateString();
+
+            $hoy = now()
+                ->toDateString();
+
+            $query->whereBetween('fecha', [
+                $inicioSemana,
+                $hoy
+            ]);
+
+            return $query;
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Mes actual
+        |--------------------------------------------------------------------------
+        |
+        | Desde el primer día del mes hasta hoy.
+        |
+        */
+
+        if ($periodo === 'mes') {
+
+            $inicioMes = now()
+                ->startOfMonth()
+                ->toDateString();
+
+            $hoy = now()
+                ->toDateString();
+
+            $query->whereBetween('fecha', [
+                $inicioMes,
+                $hoy
+            ]);
+
+            return $query;
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Todo
+        |--------------------------------------------------------------------------
+        |
+        | No agregamos filtro de fecha.
+        |
+        */
+
+        if ($periodo === 'todo') {
+            return $query;
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Compatibilidad con el filtro antiguo "fecha"
+        |--------------------------------------------------------------------------
+        |
+        | Si algún componente todavía manda:
+        |
+        | fecha=2026-09-08
+        |
+        | seguimos soportándolo.
+        |
+        */
+
+        if ($request->filled('fecha')) {
+
+            $query->whereDate(
+                'fecha',
+                $request->fecha
+            );
+
+            return $query;
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Valor por defecto
+        |--------------------------------------------------------------------------
+        |
+        | Si no se especificó ningún período, mostramos hoy.
+        |
+        */
+
+        $query->whereDate(
+            'fecha',
+            now()->toDateString()
+        );
+
+        return $query;
+    }
+
 
     /**
      * Listar llamadas.
      */
     public function index(Request $request): JsonResponse
     {
-        $query = $this->consultaPermitida()->with([
-            'departamento',
-            'usuario.role',
-        ]);
+        $query = $this->consultaPermitida()
+            ->with([
+                'departamento',
+                'usuario.role',
+            ]);
 
         /*
         |--------------------------------------------------------------------------
@@ -104,11 +263,31 @@ class LlamadaController extends Controller
 
             $query->where(function ($q) use ($search) {
 
-                $q->where('folio', 'like', "%{$search}%")
-                    ->orWhere('nombre', 'like', "%{$search}%")
-                    ->orWhere('telefono', 'like', "%{$search}%")
-                    ->orWhere('categoria', 'like', "%{$search}%")
-                    ->orWhere('motivo', 'like', "%{$search}%");
+                $q->where(
+                    'folio',
+                    'like',
+                    "%{$search}%"
+                )
+                    ->orWhere(
+                        'nombre',
+                        'like',
+                        "%{$search}%"
+                    )
+                    ->orWhere(
+                        'telefono',
+                        'like',
+                        "%{$search}%"
+                    )
+                    ->orWhere(
+                        'categoria',
+                        'like',
+                        "%{$search}%"
+                    )
+                    ->orWhere(
+                        'motivo',
+                        'like',
+                        "%{$search}%"
+                    );
             });
         }
 
@@ -170,17 +349,25 @@ class LlamadaController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | Filtrar por fecha
+        | Filtrar por período
         |--------------------------------------------------------------------------
+        |
+        | Aquí estaba una de las causas del problema.
+        |
+        | Ahora la tabla también entiende:
+        |
+        | hoy
+        | semana
+        | mes
+        | todo
+        | personalizado
+        |
         */
 
-        if ($request->filled('fecha')) {
-
-            $query->whereDate(
-                'fecha',
-                $request->fecha
-            );
-        }
+        $this->aplicarPeriodo(
+            $query,
+            $request
+        );
 
         /*
         |--------------------------------------------------------------------------
@@ -207,16 +394,13 @@ class LlamadaController extends Controller
     {
         /*
         |--------------------------------------------------------------------------
-        | Fechas
+        | Período
         |--------------------------------------------------------------------------
-        |
-        | Por defecto mostramos el resumen del día actual.
-        |
         */
 
-        $fecha = $request->input(
-            'fecha',
-            now()->toDateString()
+        $periodo = $request->input(
+            'periodo',
+            'hoy'
         );
 
         /*
@@ -225,8 +409,18 @@ class LlamadaController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $query = $this->consultaPermitida()
-            ->whereDate('fecha', $fecha);
+        $query = $this->consultaPermitida();
+
+        /*
+        |--------------------------------------------------------------------------
+        | Aplicar período
+        |--------------------------------------------------------------------------
+        */
+
+        $this->aplicarPeriodo(
+            $query,
+            $request
+        );
 
         /*
         |--------------------------------------------------------------------------
@@ -237,15 +431,24 @@ class LlamadaController extends Controller
         $total = (clone $query)->count();
 
         $enProceso = (clone $query)
-            ->where('estado', 'en_proceso')
+            ->where(
+                'estado',
+                'en_proceso'
+            )
             ->count();
 
         $transferidas = (clone $query)
-            ->where('estado', 'transferida')
+            ->where(
+                'estado',
+                'transferida'
+            )
             ->count();
 
         $finalizadas = (clone $query)
-            ->where('estado', 'finalizada')
+            ->where(
+                'estado',
+                'finalizada'
+            )
             ->count();
 
         /*
@@ -264,7 +467,9 @@ class LlamadaController extends Controller
             ->select(
                 'departamentos.id',
                 'departamentos.nombre',
-                DB::raw('COUNT(llamadas.id) as total')
+                DB::raw(
+                    'COUNT(llamadas.id) as total'
+                )
             )
             ->groupBy(
                 'departamentos.id',
@@ -282,7 +487,9 @@ class LlamadaController extends Controller
         $porCategoria = (clone $query)
             ->select(
                 'categoria',
-                DB::raw('COUNT(*) as total')
+                DB::raw(
+                    'COUNT(*) as total'
+                )
             )
             ->groupBy('categoria')
             ->orderByDesc('total')
@@ -297,7 +504,9 @@ class LlamadaController extends Controller
         $motivos = (clone $query)
             ->select(
                 'motivo',
-                DB::raw('COUNT(*) as total')
+                DB::raw(
+                    'COUNT(*) as total'
+                )
             )
             ->groupBy('motivo')
             ->orderByDesc('total')
@@ -313,15 +522,59 @@ class LlamadaController extends Controller
         $porHora = (clone $query)
             ->select(
                 DB::raw(
-                    "HOUR(hora) as hora"
+                    'HOUR(hora) as hora'
                 ),
-                DB::raw('COUNT(*) as total')
+                DB::raw(
+                    'COUNT(*) as total'
+                )
             )
             ->groupBy(
-                DB::raw('HOUR(hora)')
+                DB::raw(
+                    'HOUR(hora)'
+                )
             )
             ->orderBy('hora')
             ->get();
+
+        /*
+        |--------------------------------------------------------------------------
+        | Información del período
+        |--------------------------------------------------------------------------
+        */
+
+        $fechaDesde = null;
+        $fechaHasta = null;
+
+        if ($periodo === 'hoy') {
+
+            $fechaDesde = now()->toDateString();
+            $fechaHasta = now()->toDateString();
+        } elseif ($periodo === 'semana') {
+
+            $fechaDesde = now()
+                ->startOfWeek()
+                ->toDateString();
+
+            $fechaHasta = now()
+                ->toDateString();
+        } elseif ($periodo === 'mes') {
+
+            $fechaDesde = now()
+                ->startOfMonth()
+                ->toDateString();
+
+            $fechaHasta = now()
+                ->toDateString();
+        } elseif ($periodo === 'personalizado') {
+
+            $fechaDesde = $request->input(
+                'fecha_desde'
+            );
+
+            $fechaHasta = $request->input(
+                'fecha_hasta'
+            );
+        }
 
         /*
         |--------------------------------------------------------------------------
@@ -334,7 +587,13 @@ class LlamadaController extends Controller
 
             'data' => [
 
-                'fecha' => $fecha,
+                'periodo' => $periodo,
+
+                'fecha' => $fechaHasta,
+
+                'fecha_desde' => $fechaDesde,
+
+                'fecha_hasta' => $fechaHasta,
 
                 'resumen' => [
                     'total' => $total,
@@ -353,6 +612,7 @@ class LlamadaController extends Controller
             ],
         ]);
     }
+
 
     /**
      * Mostrar una llamada específica.
@@ -382,7 +642,8 @@ class LlamadaController extends Controller
 
             return response()->json([
                 'success' => false,
-                'message' => 'No tienes permiso para acceder a esta llamada.',
+                'message' =>
+                'No tienes permiso para acceder a esta llamada.',
             ], 403);
         }
 
@@ -391,6 +652,7 @@ class LlamadaController extends Controller
             'data' => $llamada,
         ]);
     }
+
 
     /**
      * Registrar una nueva llamada.
@@ -447,42 +709,50 @@ class LlamadaController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $llamada = DB::transaction(function () use (
-            $validated,
-            $usuario
-        ) {
+        $llamada = DB::transaction(
+            function () use (
+                $validated,
+                $usuario
+            ) {
 
-            $ahora = now();
+                $ahora = now();
 
-            $folio = $this->generarFolio();
+                $folio = $this->generarFolio();
 
-            return Llamada::create([
+                return Llamada::create([
 
-                'folio' => $folio,
+                    'folio' => $folio,
 
-                'fecha' => $ahora->toDateString(),
+                    'fecha' => $ahora->toDateString(),
 
-                'hora' => $ahora->format('H:i:s'),
+                    'hora' => $ahora->format('H:i:s'),
 
-                'telefono' => $validated['telefono'],
+                    'telefono' =>
+                    $validated['telefono'],
 
-                'nombre' => $validated['nombre'],
+                    'nombre' =>
+                    $validated['nombre'],
 
-                'motivo' => $validated['motivo'],
+                    'motivo' =>
+                    $validated['motivo'],
 
-                'categoria' => $validated['categoria'],
+                    'categoria' =>
+                    $validated['categoria'],
 
-                'departamento_id' =>
-                $validated['departamento_id'],
+                    'departamento_id' =>
+                    $validated['departamento_id'],
 
-                'usuario_id' => $usuario->id,
+                    'usuario_id' =>
+                    $usuario->id,
 
-                'estado' => 'en_proceso',
+                    'estado' =>
+                    'en_proceso',
 
-                'observaciones' =>
-                $validated['observaciones'] ?? null,
-            ]);
-        });
+                    'observaciones' =>
+                    $validated['observaciones'] ?? null,
+                ]);
+            }
+        );
 
         $llamada->load([
             'departamento',
@@ -490,14 +760,17 @@ class LlamadaController extends Controller
         ]);
 
         return response()->json([
+
             'success' => true,
 
             'message' =>
             'Llamada registrada correctamente.',
 
             'data' => $llamada,
+
         ], 201);
     }
+
 
     /**
      * Actualizar información de una llamada.
@@ -517,7 +790,8 @@ class LlamadaController extends Controller
 
             return response()->json([
                 'success' => false,
-                'message' => 'No tienes permiso para modificar esta llamada.',
+                'message' =>
+                'No tienes permiso para modificar esta llamada.',
             ], 403);
         }
 
@@ -565,14 +839,17 @@ class LlamadaController extends Controller
         ]);
 
         return response()->json([
+
             'success' => true,
 
             'message' =>
             'Llamada actualizada correctamente.',
 
             'data' => $llamada,
+
         ]);
     }
+
 
     /**
      * Cambiar estado de una llamada.
@@ -594,10 +871,10 @@ class LlamadaController extends Controller
     ): JsonResponse {
 
         /*
-    |--------------------------------------------------------------------------
-    | Verificar acceso a la llamada
-    |--------------------------------------------------------------------------
-    */
+        |--------------------------------------------------------------------------
+        | Verificar acceso a la llamada
+        |--------------------------------------------------------------------------
+        */
 
         if (!$this->puedeAcceder($llamada)) {
 
@@ -608,12 +885,11 @@ class LlamadaController extends Controller
             ], 403);
         }
 
-
         /*
-    |--------------------------------------------------------------------------
-    | Validar nuevo estado
-    |--------------------------------------------------------------------------
-    */
+        |--------------------------------------------------------------------------
+        | Validar nuevo estado
+        |--------------------------------------------------------------------------
+        */
 
         $validated = $request->validate([
 
@@ -624,22 +900,20 @@ class LlamadaController extends Controller
 
         ]);
 
-
         $nuevoEstado = $validated['estado'];
 
         $estadoActual = $llamada->estado;
 
         $usuario = Auth::user();
 
-
         /*
-    |--------------------------------------------------------------------------
-    | Super Admin / Supervisor
-    |--------------------------------------------------------------------------
-    |
-    | Pueden administrar los estados.
-    |
-    */
+        |--------------------------------------------------------------------------
+        | Super Admin / Supervisor
+        |--------------------------------------------------------------------------
+        |
+        | Pueden administrar los estados.
+        |
+        */
 
         if (
             $usuario->esSuperAdmin() ||
@@ -666,16 +940,15 @@ class LlamadaController extends Controller
             ]);
         }
 
-
         /*
-    |--------------------------------------------------------------------------
-    | RECEPCIONISTA
-    |--------------------------------------------------------------------------
-    |
-    | Solamente puede transferir una llamada que está
-    | actualmente en proceso.
-    |
-    */
+        |--------------------------------------------------------------------------
+        | RECEPCIONISTA
+        |--------------------------------------------------------------------------
+        |
+        | Solamente puede transferir una llamada que está
+        | actualmente en proceso.
+        |
+        */
 
         if ($usuario->esRecepcionista()) {
 
@@ -694,12 +967,10 @@ class LlamadaController extends Controller
                 ], 403);
             }
 
-
             $this->actualizarEstado(
                 $llamada,
                 $nuevoEstado
             );
-
 
             return response()->json([
 
@@ -716,20 +987,19 @@ class LlamadaController extends Controller
             ]);
         }
 
-
         /*
-    |--------------------------------------------------------------------------
-    | JEFE DE DEPARTAMENTO
-    |--------------------------------------------------------------------------
-    |
-    | Solamente puede finalizar llamadas:
-    |
-    | transferida -> finalizada
-    |
-    | Además, puedeAcceder() ya garantiza que la llamada
-    | pertenezca a su departamento.
-    |
-    */
+        |--------------------------------------------------------------------------
+        | JEFE DE DEPARTAMENTO
+        |--------------------------------------------------------------------------
+        |
+        | Solamente puede finalizar llamadas:
+        |
+        | transferida -> finalizada
+        |
+        | Además, puedeAcceder() ya garantiza que la llamada
+        | pertenezca a su departamento.
+        |
+        */
 
         if ($usuario->esJefeDepartamento()) {
 
@@ -748,12 +1018,10 @@ class LlamadaController extends Controller
                 ], 403);
             }
 
-
             $this->actualizarEstado(
                 $llamada,
                 $nuevoEstado
             );
-
 
             return response()->json([
 
@@ -770,12 +1038,11 @@ class LlamadaController extends Controller
             ]);
         }
 
-
         /*
-    |--------------------------------------------------------------------------
-    | Usuario sin permisos
-    |--------------------------------------------------------------------------
-    */
+        |--------------------------------------------------------------------------
+        | Usuario sin permisos
+        |--------------------------------------------------------------------------
+        */
 
         return response()->json([
 
@@ -800,12 +1067,11 @@ class LlamadaController extends Controller
             'estado' => $estado,
         ];
 
-
         /*
-    |--------------------------------------------------------------------------
-    | Transferida
-    |--------------------------------------------------------------------------
-    */
+        |--------------------------------------------------------------------------
+        | Transferida
+        |--------------------------------------------------------------------------
+        */
 
         if ($estado === 'transferida') {
 
@@ -814,32 +1080,30 @@ class LlamadaController extends Controller
             $datos['finalizada_at'] = null;
         }
 
-
         /*
-    |--------------------------------------------------------------------------
-    | Finalizada
-    |--------------------------------------------------------------------------
-    */
+        |--------------------------------------------------------------------------
+        | Finalizada
+        |--------------------------------------------------------------------------
+        */
 
         if ($estado === 'finalizada') {
 
             /*
-        | Si por alguna razón no existe fecha de transferencia,
-        | no la inventamos.
-        |
-        | La llamada normalmente llegará aquí después de
-        | estar en estado "transferida".
-        */
+            | Si por alguna razón no existe fecha de transferencia,
+            | no la inventamos.
+            |
+            | La llamada normalmente llegará aquí después de
+            | estar en estado "transferida".
+            */
 
             $datos['finalizada_at'] = now();
         }
 
-
         /*
-    |--------------------------------------------------------------------------
-    | En proceso
-    |--------------------------------------------------------------------------
-    */
+        |--------------------------------------------------------------------------
+        | En proceso
+        |--------------------------------------------------------------------------
+        */
 
         if ($estado === 'en_proceso') {
 
@@ -848,15 +1112,17 @@ class LlamadaController extends Controller
             $datos['finalizada_at'] = null;
         }
 
-
         $llamada->update($datos);
     }
+
 
     /**
      * Determina si el usuario puede acceder a una llamada.
      */
-    private function puedeAcceder(Llamada $llamada): bool
-    {
+    private function puedeAcceder(
+        Llamada $llamada
+    ): bool {
+
         $usuario = Auth::user();
 
         /*
@@ -907,6 +1173,7 @@ class LlamadaController extends Controller
 
         return false;
     }
+
 
     /**
      * Generar folio automático.

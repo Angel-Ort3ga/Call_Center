@@ -1,4 +1,3 @@
-```vue
 <template>
     <div class="page-header">
 
@@ -16,7 +15,7 @@
             <i class="fas fa-building"></i>
 
             <span>
-                Soporte Técnico
+                {{ nombreDepartamento }}
             </span>
         </div>
 
@@ -24,18 +23,34 @@
 </template>
 
 <script>
+import { getUser } from '../../../../auth/auth';
+
 export default {
 
     name: 'MiDepartamentoHeader',
 
-    methods: {
+    data() {
+        return {
+            usuario: null,
+        };
+    },
 
-        actualizar() {
-            this.$emit('actualizar')
-        }
+    computed: {
 
-    }
+        nombreDepartamento() {
 
-}
+            if (!this.usuario) {
+                return 'Mi departamento';
+            }
+
+            return this.usuario.departamento
+                || 'Sin departamento asignado';
+        },
+    },
+
+    mounted() {
+
+        this.usuario = getUser();
+    },
+};
 </script>
-```

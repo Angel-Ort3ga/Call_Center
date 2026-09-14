@@ -1,26 +1,25 @@
-```vue
 <template>
     <div class="filters">
 
-        <!-- BUSCADOR -->
-        <div class="search-box">
+        <!-- Busqueda -->
 
+        <div class="search-box">
             <i class="fas fa-search"></i>
 
             <input
                 v-model="busqueda"
                 type="text"
                 placeholder="Buscar llamada..."
+                @keyup.enter="buscar"
             >
-
         </div>
 
-        <!-- ESTADO -->
+        <!-- Estado -->
+
         <select
             v-model="estado"
             class="filter-select"
         >
-
             <option value="">
                 Todos los estados
             </option>
@@ -36,15 +35,14 @@
             <option value="finalizada">
                 Finalizada
             </option>
-
         </select>
 
-        <!-- CATEGORÍA -->
+        <!-- Categoria -->
+
         <select
             v-model="categoria"
             class="filter-select"
         >
-
             <option value="">
                 Todas las categorías
             </option>
@@ -64,17 +62,16 @@
             <option value="soporte">
                 Soporte
             </option>
-
         </select>
 
-        <!-- BUSCAR -->
+        <!-- Buscar -->
+
         <button
             type="button"
             class="search-button"
             @click="buscar"
         >
             <i class="fas fa-search"></i>
-
             Buscar
         </button>
 
@@ -83,31 +80,36 @@
 
 <script>
 export default {
-
     name: 'MiDepartamentoFiltros',
 
     data() {
         return {
             busqueda: '',
             estado: '',
-            categoria: ''
-        }
+            categoria: '',
+        };
     },
 
     methods: {
-
         buscar() {
+            this.$emit('buscar', {
+                busqueda: this.busqueda.trim(),
+                estado: this.estado,
+                categoria: this.categoria,
+            });
+        },
+
+        limpiar() {
+            this.busqueda = '';
+            this.estado = '';
+            this.categoria = '';
 
             this.$emit('buscar', {
-                busqueda: this.busqueda,
-                estado: this.estado,
-                categoria: this.categoria
-            })
-
-        }
-
-    }
-
-}
+                busqueda: '',
+                estado: '',
+                categoria: '',
+            });
+        },
+    },
+};
 </script>
-```
